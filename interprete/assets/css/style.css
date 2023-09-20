@@ -1,0 +1,57 @@
+
+/*estilos de la barra de navegacion*/
+
+.item{
+    color: #EDF538;
+}
+
+.item:hover{
+    cursor: pointer;
+}
+
+.opcion:hover{
+    cursor: pointer;
+}
+
+/*estilos de los titulos del editos*/
+#titulo{
+    color: #EDF538;
+    font-size: 25px;
+    margin-top: 25px;
+}
+
+/*estilos de los editores de texto*/
+#cuerpo-compilador{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#area-botones{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: black;
+}
+
+#area-botones .btn{
+    margin: 15px 30px 15px 30px;
+    width: 150px;
+}
+
+.editor{
+    height: 400px;
+}
+
+.cst-node {
+    border: 1px solid #000;
+    padding: 5px;
+    margin: 5px;
+    background-color: #f0f0f0;
+}
+
+.cst-children {
+    margin-left: 20px;
+}
+
+  
