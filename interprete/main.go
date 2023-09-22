@@ -33,10 +33,10 @@ func manejarEnviarcodigo(w http.ResponseWriter, r *http.Request) {
 	tokens := antlr.NewCommonTokenStream(lexer, antlr.TokenDefaultChannel)
 	p := parser.NewSwiftGrammarParser(tokens)
 	p.BuildParseTrees = true
-	visitor := lenguaje.NewVisitor()
 	tree := p.S()
+	visitor := lenguaje.NewVisitor()
 	out := visitor.Visit(tree)
-
+	
 	//preparando respuesta
 	respuesta := Respuesta{
 		Salida:  out.(string),

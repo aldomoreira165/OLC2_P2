@@ -1,4 +1,4 @@
-// Generated from c:\Users\aldov\Desktop\Cursos Segundo Semestre 2023\Laboratorio Organización de Lenguajes y Compiladores 2 - copia\Proyectos\Proyecto 1\interprete\SwiftGrammar.g4 by ANTLR 4.9.2
+// Generated from c:\Users\aldov\Desktop\Cursos Segundo Semestre 2023\Laboratorio Organización de Lenguajes y Compiladores 2 - copia\Proyectos\Proyecto 2\interprete\SwiftGrammar.g4 by ANTLR 4.9.2
 import org.antlr.v4.runtime.atn.*;
 import org.antlr.v4.runtime.dfa.DFA;
 import org.antlr.v4.runtime.*;
@@ -2492,8 +2492,8 @@ public class SwiftGrammarParser extends Parser {
 	public static class PrintstmtContext extends ParserRuleContext {
 		public TerminalNode PRINT() { return getToken(SwiftGrammarParser.PRINT, 0); }
 		public TerminalNode PARIZQ() { return getToken(SwiftGrammarParser.PARIZQ, 0); }
-		public ListaexpresionesContext listaexpresiones() {
-			return getRuleContext(ListaexpresionesContext.class,0);
+		public ExprContext expr() {
+			return getRuleContext(ExprContext.class,0);
 		}
 		public TerminalNode PARDER() { return getToken(SwiftGrammarParser.PARDER, 0); }
 		public PrintstmtContext(ParserRuleContext parent, int invokingState) {
@@ -2513,7 +2513,7 @@ public class SwiftGrammarParser extends Parser {
 			setState(451);
 			match(PARIZQ);
 			setState(452);
-			listaexpresiones();
+			expr(0);
 			setState(453);
 			match(PARDER);
 			}
@@ -4952,9 +4952,9 @@ public class SwiftGrammarParser extends Parser {
 		"\3\2\2\2\u01ba\u01a3\3\2\2\2\u01ba\u01ad\3\2\2\2\u01bb;\3\2\2\2\u01bc"+
 		"\u01bd\7\30\2\2\u01bd\u01be\5n8\2\u01be\u01bf\7@\2\2\u01bf=\3\2\2\2\u01c0"+
 		"\u01c1\7\27\2\2\u01c1?\3\2\2\2\u01c2\u01c3\7\31\2\2\u01c3A\3\2\2\2\u01c4"+
-		"\u01c5\7\13\2\2\u01c5\u01c6\78\2\2\u01c6\u01c7\5 \21\2\u01c7\u01c8\79"+
-		"\2\2\u01c8C\3\2\2\2\u01c9\u01ca\7\3\2\2\u01ca\u01cb\78\2\2\u01cb\u01cc"+
-		"\5n8\2\u01cc\u01cd\79\2\2\u01cdE\3\2\2\2\u01ce\u01cf\7\4\2\2\u01cf\u01d0"+
+		"\u01c5\7\13\2\2\u01c5\u01c6\78\2\2\u01c6\u01c7\5n8\2\u01c7\u01c8\79\2"+
+		"\2\u01c8C\3\2\2\2\u01c9\u01ca\7\3\2\2\u01ca\u01cb\78\2\2\u01cb\u01cc\5"+
+		"n8\2\u01cc\u01cd\79\2\2\u01cdE\3\2\2\2\u01ce\u01cf\7\4\2\2\u01cf\u01d0"+
 		"\78\2\2\u01d0\u01d1\5n8\2\u01d1\u01d2\79\2\2\u01d2G\3\2\2\2\u01d3\u01d4"+
 		"\7\7\2\2\u01d4\u01d5\78\2\2\u01d5\u01d6\5n8\2\u01d6\u01d7\79\2\2\u01d7"+
 		"I\3\2\2\2\u01d8\u01d9\7\32\2\2\u01d9\u01da\7(\2\2\u01da\u01dc\78\2\2\u01db"+

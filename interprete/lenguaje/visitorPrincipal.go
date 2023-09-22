@@ -3,47 +3,39 @@ package lenguaje
 import (
 	"interprete/Parser"
 	"log"
-	"strconv"
 
 	"github.com/antlr4-go/antlr/v4"
 )
 
 type Visitor struct {
 	antlr.ParseTreeVisitor
-	shouldBreak        bool
-	shouldContinue	 	bool
+	generator Generator
 }
 
 func NewVisitor() parser.SwiftGrammarVisitor {
 	return &Visitor{
-		shouldBreak:        false,
-		shouldContinue:		false,
+		generator: NewGenerator(),	
 	}
 }
 
 func (l *Visitor) VisitS(ctx *parser.SContext) interface{} {
-	return l.Visit(ctx.Block())
+	l.Visit(ctx.Block())
+
+	var out string
+
+	for _, val := range l.generator.GetFuncCode() {
+		out += val.(string)
+	}
+
+	return out
 }
 
 // visit de block
 func (l *Visitor) VisitBlock(ctx *parser.BlockContext) interface{} {
-	var out string
 	for i := 0; ctx.Stmt(i) != nil; i++ {
-		if !l.shouldBreak && !l.shouldContinue{
-			stmtResult := l.Visit(ctx.Stmt(i))
-			switch stmtResult.(type) {
-			case int64:
-				out += strconv.FormatInt(stmtResult.(int64), 10)
-			case float64:
-				out += strconv.FormatFloat(stmtResult.(float64), 'f', -1, 64)
-			case string:
-				out += stmtResult.(string)
-			}
-		}else{
-			break
-		}
+		l.Visit(ctx.Stmt(i))
 	}
-	return out
+	return nil
 }
 
 // visit de las sentencias
@@ -148,4 +140,8 @@ func (l *Visitor) Visit(tree antlr.ParseTree) interface{} {
 		nodo := tree.Accept(l)
 		return nodo
 	}
+}
+
+func (l *Visitor) getCodeFromGenerator(g Generator) []interface{} {
+	return l.generator.GetCode()
 }

@@ -1,11 +1,79 @@
 package lenguaje
 
 import (
+	"fmt"
 	"interprete/Parser"
+	"strconv"
+	"strings"
 )
 
 func (l *Visitor) VisitOpExpr(ctx *parser.OpExprContext) interface{} {
-	return nil
+	op := ctx.GetOp().GetText()
+	op_izq := l.Visit(ctx.GetLeft()).(Value)
+	op_der := l.Visit(ctx.GetRight()).(Value)
+	var dominante TipoExpresion
+
+	tabla_dominante := [5][5]TipoExpresion{
+		//		INTEGER			FLOAT				STRING				BOOLEAN				NULL
+		{INTEGER, FLOAT, STRING, BOOLEAN, NULL},
+		//FLOAT
+		{FLOAT, FLOAT, STRING, NULL, NULL},
+		//STRING
+		{STRING, STRING, STRING, STRING, NULL},
+		//BOOLEAN
+		{BOOLEAN, NULL, STRING, BOOLEAN, NULL},
+		//NULL
+		{NULL, NULL, NULL, NULL, NULL},
+	}
+
+	var result Value
+	newTemp := l.generator.NewTemp()
+
+	switch op {
+	case "+":
+		{
+			dominante = tabla_dominante[op_izq.Type][op_der.Type]
+			if dominante == INTEGER || dominante == FLOAT {
+				l.generator.AddExpression(newTemp, op_izq.Value, op_der.Value, "+")
+				result = NewValue(newTemp, true, dominante, false, false, false)
+				result.IntValue = op_izq.IntValue + op_der.IntValue
+				return result
+			}else{
+				fmt.Println("Error de tipos en la suma")
+			}
+		}
+	case "-":
+		{
+			dominante = tabla_dominante[op_izq.Type][op_der.Type]
+			if dominante == INTEGER || dominante == FLOAT {
+				l.generator.AddExpression(newTemp, op_izq.Value, op_der.Value, "-")
+				result = NewValue(newTemp, true, dominante, false, false, false)
+				result.IntValue = op_izq.IntValue - op_der.IntValue
+				return result
+			}
+		}
+	case "*":
+		{
+			dominante = tabla_dominante[op_izq.Type][op_der.Type]
+			if dominante == INTEGER || dominante == FLOAT {
+				l.generator.AddExpression(newTemp, op_izq.Value, op_der.Value, "*")
+				result = NewValue(newTemp, true, dominante, false, false, false)
+				result.IntValue = op_izq.IntValue * op_der.IntValue
+				return result
+			}
+		}
+	case "/":
+		{
+			dominante = tabla_dominante[op_izq.Type][op_der.Type]
+			if dominante == INTEGER || dominante == FLOAT {
+				l.generator.AddExpression(newTemp, op_izq.Value, op_der.Value, "/")
+				result = NewValue(newTemp, true, dominante, false, false, false)
+				result.IntValue = op_izq.IntValue / op_der.IntValue
+				return result
+			}
+		}		
+	}
+	return result
 }
 
 func (l *Visitor) VisitParExpr(ctx *parser.ParExprContext) interface{} {
@@ -13,7 +81,25 @@ func (l *Visitor) VisitParExpr(ctx *parser.ParExprContext) interface{} {
 }
 
 func (l *Visitor) VisitNumExpr(ctx *parser.NumExprContext) interface{} {
-	return nil
+	numStr := ctx.GetText()
+	if strings.Contains(numStr, ".") {
+		num, err := strconv.ParseFloat(numStr, 64);
+		if err != nil {
+			fmt.Println("Error al convertir el numero: ", err)
+		}
+		primitive := NewPrimitive(ctx.GetStart().GetLine(), ctx.GetStart().GetColumn(), num, FLOAT)
+		result := NewValue(fmt.Sprintf("%v", primitive.Valor), false, primitive.Tipo, false, false, false)
+		result.IntValue = primitive.Valor.(int)
+		return result
+	} else {
+		num, err := strconv.Atoi(numStr)
+		if err != nil {
+			fmt.Println("Error al convertir el numero: ", err)
+		}
+		primitive := NewPrimitive(ctx.GetStart().GetLine(), ctx.GetStart().GetColumn(), num, INTEGER)
+		result := NewValue(fmt.Sprintf("%v", primitive.Valor), false, primitive.Tipo, false, false, false)
+		return result
+	}	
 }
 
 func (l *Visitor) VisitIdExpr(ctx *parser.IdExprContext) interface{} {
