@@ -8,8 +8,12 @@ import (
 // visit del print
 func (l *Visitor) VisitPrintstmt(ctx *parser.PrintstmtContext) interface{} {
 	value := ctx.Expr().Accept(l)
-	if value.(Value).Type == INTEGER || value.(Value).Type == FLOAT{
+	if value.(Value).Type == INTEGER  {
 		l.generator.AddPrintf("d", "(int)"+fmt.Sprintf("%v", value.(Value).Value))
+		l.generator.AddPrintf("c", "10")
+		l.generator.AddBr()
+	} else if value.(Value).Type == FLOAT {
+		l.generator.AddPrintf("f", "(float)"+fmt.Sprintf("%v", value.(Value).Value))
 		l.generator.AddPrintf("c", "10")
 		l.generator.AddBr()
 	}

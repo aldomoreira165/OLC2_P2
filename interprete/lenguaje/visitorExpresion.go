@@ -35,11 +35,10 @@ func (l *Visitor) VisitOpExpr(ctx *parser.OpExprContext) interface{} {
 			dominante = tabla_dominante[op_izq.Type][op_der.Type]
 			if dominante == INTEGER || dominante == FLOAT {
 				l.generator.AddExpression(newTemp, op_izq.Value, op_der.Value, "+")
-				result = NewValue(newTemp, true, dominante, false, false, false)
-				result.IntValue = op_izq.IntValue + op_der.IntValue
+				result = NewValue(newTemp, true, dominante)
 				return result
-			}else{
-				fmt.Println("Error de tipos en la suma")
+			} else {
+				l.generator.addErrorMessage()
 			}
 		}
 	case "-":
@@ -47,9 +46,10 @@ func (l *Visitor) VisitOpExpr(ctx *parser.OpExprContext) interface{} {
 			dominante = tabla_dominante[op_izq.Type][op_der.Type]
 			if dominante == INTEGER || dominante == FLOAT {
 				l.generator.AddExpression(newTemp, op_izq.Value, op_der.Value, "-")
-				result = NewValue(newTemp, true, dominante, false, false, false)
-				result.IntValue = op_izq.IntValue - op_der.IntValue
+				result = NewValue(newTemp, true, dominante)
 				return result
+			} else {
+				l.generator.addErrorMessage()
 			}
 		}
 	case "*":
@@ -57,21 +57,68 @@ func (l *Visitor) VisitOpExpr(ctx *parser.OpExprContext) interface{} {
 			dominante = tabla_dominante[op_izq.Type][op_der.Type]
 			if dominante == INTEGER || dominante == FLOAT {
 				l.generator.AddExpression(newTemp, op_izq.Value, op_der.Value, "*")
-				result = NewValue(newTemp, true, dominante, false, false, false)
-				result.IntValue = op_izq.IntValue * op_der.IntValue
+				result = NewValue(newTemp, true, dominante)
 				return result
+			} else {
+				l.generator.addErrorMessage()
 			}
 		}
 	case "/":
 		{
 			dominante = tabla_dominante[op_izq.Type][op_der.Type]
 			if dominante == INTEGER || dominante == FLOAT {
+				lvl1 := l.generator.NewLabel()
+				lvl2 := l.generator.NewLabel()
+
+				l.generator.AddIf(op_der.Value, "0", "!=", lvl1)
+				l.generator.AddPrintf("c", "77")
+				l.generator.AddPrintf("c", "97")
+				l.generator.AddPrintf("c", "116")
+				l.generator.AddPrintf("c", "104")
+				l.generator.AddPrintf("c", "69")
+				l.generator.AddPrintf("c", "114")
+				l.generator.AddPrintf("c", "114")
+				l.generator.AddPrintf("c", "111")
+				l.generator.AddPrintf("c", "114")
+				l.generator.AddExpression(newTemp, "0", "", "")
+				l.generator.AddGoto(lvl2)
+				l.generator.AddLabel(lvl1)
 				l.generator.AddExpression(newTemp, op_izq.Value, op_der.Value, "/")
-				result = NewValue(newTemp, true, dominante, false, false, false)
-				result.IntValue = op_izq.IntValue / op_der.IntValue
+				l.generator.AddLabel(lvl2)
+				result = NewValue(newTemp, true, dominante)
 				return result
+			} else {
+				l.generator.addErrorMessage()
 			}
-		}		
+		}
+	case "%":
+		{
+			dominante = tabla_dominante[op_izq.Type][op_der.Type]
+			if dominante == INTEGER {
+				lvl1 := l.generator.NewLabel()
+				lvl2 := l.generator.NewLabel()
+
+				l.generator.AddIf(op_der.Value, "0", "!=", lvl1)
+				l.generator.AddPrintf("c", "77")
+				l.generator.AddPrintf("c", "97")
+				l.generator.AddPrintf("c", "116")
+				l.generator.AddPrintf("c", "104")
+				l.generator.AddPrintf("c", "69")
+				l.generator.AddPrintf("c", "114")
+				l.generator.AddPrintf("c", "114")
+				l.generator.AddPrintf("c", "111")
+				l.generator.AddPrintf("c", "114")
+				l.generator.AddExpression(newTemp, "0", "", "")
+				l.generator.AddGoto(lvl2)
+				l.generator.AddLabel(lvl1)
+				l.generator.AddExpression(newTemp, op_izq.Value, op_der.Value, "%")
+				l.generator.AddLabel(lvl2)
+				result = NewValue(newTemp, true, dominante)
+				return result
+			} else {
+				l.generator.addErrorMessage()
+			}
+		}
 	}
 	return result
 }
@@ -83,13 +130,12 @@ func (l *Visitor) VisitParExpr(ctx *parser.ParExprContext) interface{} {
 func (l *Visitor) VisitNumExpr(ctx *parser.NumExprContext) interface{} {
 	numStr := ctx.GetText()
 	if strings.Contains(numStr, ".") {
-		num, err := strconv.ParseFloat(numStr, 64);
+		num, err := strconv.ParseFloat(numStr, 64)
 		if err != nil {
 			fmt.Println("Error al convertir el numero: ", err)
 		}
 		primitive := NewPrimitive(ctx.GetStart().GetLine(), ctx.GetStart().GetColumn(), num, FLOAT)
-		result := NewValue(fmt.Sprintf("%v", primitive.Valor), false, primitive.Tipo, false, false, false)
-		result.IntValue = primitive.Valor.(int)
+		result := NewValue(fmt.Sprintf("%v", primitive.Valor), false, primitive.Tipo)
 		return result
 	} else {
 		num, err := strconv.Atoi(numStr)
@@ -97,9 +143,9 @@ func (l *Visitor) VisitNumExpr(ctx *parser.NumExprContext) interface{} {
 			fmt.Println("Error al convertir el numero: ", err)
 		}
 		primitive := NewPrimitive(ctx.GetStart().GetLine(), ctx.GetStart().GetColumn(), num, INTEGER)
-		result := NewValue(fmt.Sprintf("%v", primitive.Valor), false, primitive.Tipo, false, false, false)
+		result := NewValue(fmt.Sprintf("%v", primitive.Valor), false, primitive.Tipo)
 		return result
-	}	
+	}
 }
 
 func (l *Visitor) VisitIdExpr(ctx *parser.IdExprContext) interface{} {
@@ -111,14 +157,25 @@ func (l *Visitor) VisitStrExpr(ctx *parser.StrExprContext) interface{} {
 }
 
 func (l *Visitor) VisitBoolExpr(ctx *parser.BoolExprContext) interface{} {
-	return nil
+	booleanValue := NewValue(ctx.GetText(), false, BOOLEAN)
+	trueLabel := l.generator.NewLabel()
+	falseLabel := l.generator.NewLabel()
+
+	if booleanValue.Value == "true" {
+		l.generator.AddGoto(trueLabel)
+	} else {
+		l.generator.AddGoto(falseLabel)
+	}
+
+	result := NewValue("", false, BOOLEAN)
+	return result
 }
 
 func (l *Visitor) VisitUnariaExpr(ctx *parser.UnariaExprContext) interface{} {
 	return nil
 }
 
-//not expr
+// not expr
 func (l *Visitor) VisitNotExpr(ctx *parser.NotExprContext) interface{} {
 	return nil
 }
@@ -170,4 +227,3 @@ func (l *Visitor) VisitAccesoValorStructExpr(ctx *parser.AccesoValorStructExprCo
 func (l *Visitor) VisitAccesoVectorStructExpr(ctx *parser.AccesoVectorStructExprContext) interface{} {
 	return nil
 }
-
