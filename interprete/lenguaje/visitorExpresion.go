@@ -37,8 +37,6 @@ func (l *Visitor) VisitOpExpr(ctx *parser.OpExprContext) interface{} {
 				l.generator.AddExpression(newTemp, op_izq.Value, op_der.Value, "+")
 				result = NewValue(newTemp, true, dominante)
 				return result
-			} else {
-				l.generator.addErrorMessage()
 			}
 		}
 	case "-":
@@ -48,8 +46,6 @@ func (l *Visitor) VisitOpExpr(ctx *parser.OpExprContext) interface{} {
 				l.generator.AddExpression(newTemp, op_izq.Value, op_der.Value, "-")
 				result = NewValue(newTemp, true, dominante)
 				return result
-			} else {
-				l.generator.addErrorMessage()
 			}
 		}
 	case "*":
@@ -59,8 +55,6 @@ func (l *Visitor) VisitOpExpr(ctx *parser.OpExprContext) interface{} {
 				l.generator.AddExpression(newTemp, op_izq.Value, op_der.Value, "*")
 				result = NewValue(newTemp, true, dominante)
 				return result
-			} else {
-				l.generator.addErrorMessage()
 			}
 		}
 	case "/":
@@ -87,8 +81,6 @@ func (l *Visitor) VisitOpExpr(ctx *parser.OpExprContext) interface{} {
 				l.generator.AddLabel(lvl2)
 				result = NewValue(newTemp, true, dominante)
 				return result
-			} else {
-				l.generator.addErrorMessage()
 			}
 		}
 	case "%":
@@ -115,8 +107,6 @@ func (l *Visitor) VisitOpExpr(ctx *parser.OpExprContext) interface{} {
 				l.generator.AddLabel(lvl2)
 				result = NewValue(newTemp, true, dominante)
 				return result
-			} else {
-				l.generator.addErrorMessage()
 			}
 		}
 	}
@@ -153,7 +143,10 @@ func (l *Visitor) VisitIdExpr(ctx *parser.IdExprContext) interface{} {
 }
 
 func (l *Visitor) VisitStrExpr(ctx *parser.StrExprContext) interface{} {
-	return nil
+	strValue := ctx.GetText()
+	primitive := NewPrimitive(ctx.GetStart().GetLine(), ctx.GetStart().GetColumn(), strValue, STRING)
+	result := NewValue(fmt.Sprintf("%v", primitive.Valor), false, primitive.Tipo)
+	return result
 }
 
 func (l *Visitor) VisitBoolExpr(ctx *parser.BoolExprContext) interface{} {

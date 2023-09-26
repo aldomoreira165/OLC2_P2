@@ -1,9 +1,9 @@
 package lenguaje
 
 import (
+	"fmt"
 	"interprete/Parser"
 	"log"
-
 	"github.com/antlr4-go/antlr/v4"
 )
 
@@ -20,11 +20,12 @@ func NewVisitor() parser.SwiftGrammarVisitor {
 
 func (l *Visitor) VisitS(ctx *parser.SContext) interface{} {
 	l.Visit(ctx.Block())
+	l.generator.GenerateFinalCode()
 
 	var out string
 
-	for _, val := range l.generator.GetFuncCode() {
-		out += val.(string)
+	for _, val := range l.generator.GetFinalCode().ToArray(){
+		out = out + fmt.Sprintf("%v", val)
 	}
 
 	return out
@@ -140,8 +141,4 @@ func (l *Visitor) Visit(tree antlr.ParseTree) interface{} {
 		nodo := tree.Accept(l)
 		return nodo
 	}
-}
-
-func (l *Visitor) getCodeFromGenerator(g Generator) []interface{} {
-	return l.generator.GetCode()
 }
