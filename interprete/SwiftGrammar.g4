@@ -169,7 +169,7 @@ continuestmt
 //funciones embebidas
 
 printstmt
-    : PRINT PARIZQ expr PARDER
+    : PRINT PARIZQ listaexpresiones PARDER
     ;
 
 intstmt

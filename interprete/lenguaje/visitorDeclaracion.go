@@ -1,7 +1,7 @@
 package lenguaje
-
 import (
 	"interprete/Parser"
+	arrayList "interprete/lenguaje/arraylist"
 )
 
 // variables
@@ -35,11 +35,47 @@ func (l *Visitor) VisitDefVectorID(ctx *parser.DefVectorIDContext) interface{} {
 
 // lista de valores
 func (l *Visitor) VisitListaexpresiones(ctx *parser.ListaexpresionesContext) interface{} {
-	return nil
+	var list arrayList.List
+	list = *arrayList.New()
+	for _, exp := range ctx.AllExpr() {
+		value := l.Visit(exp).(Value)
+		list.Add(value)
+	} 
+	return list
 }
 
 // acceso vector
 func (l *Visitor) VisitAccesovectorstmt(ctx *parser.AccesovectorstmtContext) interface{} {
+	return nil
+}
+
+// append
+func (l *Visitor) VisitAppendvectorstmt(ctx *parser.AppendvectorstmtContext) interface{} {
+	return nil
+}
+
+// asignacion o modificacion de posicion de vector
+func (l *Visitor) VisitAsignvectorstmt(ctx *parser.AsignvectorstmtContext) interface{} {
+	return nil
+}
+
+// remove last
+func (l *Visitor) VisitRemovelastvectorstmt(ctx *parser.RemovelastvectorstmtContext) interface{} {
+	return nil
+}
+
+// remove at
+func (l *Visitor) VisitRemoveatvectorstmt(ctx *parser.RemoveatvectorstmtContext) interface{} {
+	return nil
+}
+
+// count
+func (l *Visitor) VisitCountvectorstmt(ctx *parser.CountvectorstmtContext) interface{} {
+	return nil
+}
+
+// isEmpty
+func (l *Visitor) VisitIsemptyvectorstmt(ctx *parser.IsemptyvectorstmtContext) interface{} {
 	return nil
 }
 

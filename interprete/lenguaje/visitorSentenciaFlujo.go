@@ -4,10 +4,23 @@ import (
 	"interprete/Parser"
 )
 
-// visit del if
+// Visit del if
 func (l *Visitor) VisitIfstmt(ctx *parser.IfstmtContext) interface{} {
-	return nil
+    l.generator.AddComment("generando if")
+    var condicion Value
+    condicion = l.Visit(ctx.Expr()).(Value)
+
+
+
+	for _, lvl := range condicion.TrueLabel.ToArray() {
+		l.generator.AddLabel(lvl.(string))
+	}
+
+	l.Visit(ctx.Block(0))
+	
+    return nil
 }
+
 
 func (l *Visitor) VisitElseifstmt(ctx *parser.ElseifstmtContext) interface{} {
 	return nil

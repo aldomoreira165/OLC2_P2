@@ -2,7 +2,7 @@ package lenguaje
 
 import (
 	"fmt"
-	arrayList "interprete/lenguaje/arrayList"
+	arrayList "interprete/lenguaje/arraylist"
 )
 
 type Generator struct {
@@ -34,7 +34,7 @@ func NewGenerator() Generator {
 		BreakLabel:       "",
 		ContinueLabel:    "",
 		//se deja en true temporalmente
-		MainCode:         true,
+		MainCode: true,
 	}
 	return generator
 }
@@ -51,17 +51,17 @@ func (g Generator) GetTemps() *arrayList.List {
 	return g.TempList
 }
 
-//add break lvl
+// add break lvl
 func (g *Generator) AddBreak(lvl string) {
 	g.BreakLabel = lvl
 }
 
-//add continue lvl
+// add continue lvl
 func (g *Generator) AddContinue(lvl string) {
 	g.ContinueLabel = lvl
 }
 
-//Generar un nuevo temporal
+// Generar un nuevo temporal
 func (g *Generator) NewTemp() string {
 	temp := "t" + fmt.Sprintf("%v", g.Temporal)
 	g.Temporal = g.Temporal + 1
@@ -70,14 +70,14 @@ func (g *Generator) NewTemp() string {
 	return temp
 }
 
-//Generador de Label
+// Generador de Label
 func (g *Generator) NewLabel() string {
 	temp := g.Label
 	g.Label = g.Label + 1
 	return "L" + fmt.Sprintf("%v", temp)
 }
 
-//Añade Label al codigo
+// Añade Label al codigo
 func (g *Generator) AddLabel(Label string) {
 	if g.MainCode {
 		g.Code.Add(Label + ":\n")
@@ -201,27 +201,29 @@ func (g *Generator) AddEnd() {
 	}
 }
 
-//agregar headers
+// agregar headers
 func (g *Generator) GenerateFinalCode() {
 	//****************** add head
 	g.FinalCode.Add("/*------HEADER------*/\n")
 	g.FinalCode.Add("#include <stdio.h>\n")
-	g.FinalCode.Add("#include <math.h>\n")
-	g.FinalCode.Add("double heap[30101999];\n")
-	g.FinalCode.Add("double stack[30101999];\n")
+	g.FinalCode.Add("double heap[10000];\n")
+	g.FinalCode.Add("double stack[10000];\n")
 	g.FinalCode.Add("double P;\n")
 	g.FinalCode.Add("double H;\n")
-	g.FinalCode.Add("double ")
-	//****************** add temporal declaration
-	tmpDec := fmt.Sprintf("%v", g.GetTemps().GetValue(0))
-	fmt.Println("temporales", g.GetTemps().ToArray())
-	g.GetTemps().RemoveAtIndex(0)
-	for _, s := range g.GetTemps().ToArray() {
-		tmpDec += ", "
-		tmpDec += fmt.Sprintf("%v", s)
+
+	if g.GetTemps().Len() > 0 {
+		g.FinalCode.Add("double ")
+		//****************** add temporal declaration
+		tmpDec := fmt.Sprintf("%v", g.GetTemps().GetValue(0))
+		fmt.Println("temporales", g.GetTemps().ToArray())
+		g.GetTemps().RemoveAtIndex(0)
+		for _, s := range g.GetTemps().ToArray() {
+			tmpDec += ", "
+			tmpDec += fmt.Sprintf("%v", s)
+		}
+		tmpDec += ";\n\n"
+		g.FinalCode.Add(tmpDec)
 	}
-	tmpDec += ";\n\n"
-	g.FinalCode.Add(tmpDec)
 	//****************** add natives functions
 	if g.Natives.Len() > 0 {
 		g.FinalCode.Add("/*------NATIVES------*/\n")
@@ -255,13 +257,13 @@ func (g *Generator) GeneratePrintString() {
 		newLvl1 := g.NewLabel()
 		newLvl2 := g.NewLabel()
 		//se genera la funcion printstring
-		g.Natives.Add("void dbrust_printString() {\n")
+		g.Natives.Add("void printString() {\n")
 		g.Natives.Add("\t" + newTemp1 + " = P + 1;\n")
 		g.Natives.Add("\t" + newTemp2 + " = stack[(int)" + newTemp1 + "];\n")
 		g.Natives.Add("\t" + newLvl2 + ":\n")
 		g.Natives.Add("\t" + newTemp3 + " = heap[(int)" + newTemp2 + "];\n")
 		g.Natives.Add("\tif(" + newTemp3 + " == -1) goto " + newLvl1 + ";\n")
-		g.Natives.Add("\tprintf(\"%c\", (char)" + newTemp3 + ");\n")
+		g.Natives.Add("\tprintf(\"c\", (char)" + newTemp3 + ");\n")
 		g.Natives.Add("\t" + newTemp2 + " = " + newTemp2 + " + 1;\n")
 		g.Natives.Add("\tgoto " + newLvl2 + ";\n")
 		g.Natives.Add("\t" + newLvl1 + ":\n")
@@ -311,6 +313,28 @@ func (g *Generator) GenerateConcatString() {
 		g.Natives.Add("\t" + "stack[(int)P] = " + tmp1 + ";" + "\n")
 		g.Natives.Add("\treturn;\n")
 		g.Natives.Add("}\n\n")
-		g.ConcatStringFlag = false
 	}
+}
+
+func (g *Generator) reportarErrorOperacion() {
+	//operacion invalida
+	g.AddPrintf("c", "(char)79")
+	g.AddPrintf("c", "(char)112")
+	g.AddPrintf("c", "(char)101")
+	g.AddPrintf("c", "(char)114")
+	g.AddPrintf("c", "(char)97")
+	g.AddPrintf("c", "(char)99")
+	g.AddPrintf("c", "(char)105")
+	g.AddPrintf("c", "(char)111")
+	g.AddPrintf("c", "(char)110")
+	g.AddPrintf("c", "(char)32")
+	g.AddPrintf("c", "(char)105")
+	g.AddPrintf("c", "(char)110")
+	g.AddPrintf("c", "(char)118")
+	g.AddPrintf("c", "(char)97")
+	g.AddPrintf("c", "(char)108")
+	g.AddPrintf("c", "(char)105")
+	g.AddPrintf("c", "(char)100")
+	g.AddPrintf("c", "(char)97")
+	g.AddPrintf("c", "(char)10")
 }
