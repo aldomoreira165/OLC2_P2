@@ -6,37 +6,37 @@ import (
 
 type Environment struct {
 	Anterior interface{}
-	Variable map[string]Symbol
+	Tabla    map[string]Symbol
 	Id       string
 	Size     map[string]int
 }
 
-func NewEnvironment(ant interface{}, ide string) Environment {
+func NewEnvironment(ant interface{}, id string) Environment {
 	env := Environment{
 		Anterior: ant,
-		Variable: make(map[string]Symbol),
-		Id:       ide,
+		Tabla:    make(map[string]Symbol),
+		Id:       id,
 		Size:     make(map[string]int),
 	}
 	env.Size["size"] = 0
 	return env
 }
 
-func (env Environment) SaveVariable(id string, tipo TipoExpresion, tipoarr TipoExpresion) Symbol {
-	if variable, ok := env.Variable[id]; ok {
+func (env Environment) SaveVariable(id string, tipo TipoExpresion, linea int, columna int) Symbol {
+	if variable, ok := env.Tabla[id]; ok {
 		fmt.Println("La variable "+id+" ya existe ", variable)
-		return env.Variable[id]
+		return env.Tabla[id]
 	}
-	env.Variable[id] = Symbol{Lin: 0, Col: 0, Id: id, Tipo: tipo, Posicion: env.Size["size"], TipoArr: tipoarr}
+	env.Tabla[id] = Symbol{Lin: linea, Col: columna, Tipo: tipo, Posicion: env.Size["size"]}
 	env.Size["size"] = env.Size["size"] + 1
-	return env.Variable[id]
+	return env.Tabla[id]
 }
 
 func (env Environment) GetVariable(id string) Symbol {
 	var tmpEnv Environment
 	tmpEnv = env
 	for {
-		if variable, ok := tmpEnv.Variable[id]; ok {
+		if variable, ok := tmpEnv.Tabla[id]; ok {
 			return variable
 		}
 		if tmpEnv.Anterior == nil {
@@ -46,16 +46,15 @@ func (env Environment) GetVariable(id string) Symbol {
 		}
 	}
 	fmt.Println("La variable ", id, " no existe")
-	return Symbol{Lin: 0, Col: 0, Id: "", Tipo: NIL}
+	return Symbol{Lin: 0, Col: 0, Tipo: NIL, Posicion: 0}
 }
 
 func (env Environment) SetVariable(id string, value Symbol) Symbol {
-	//value.Id = id
 	var tmpEnv Environment
 	tmpEnv = env
 	for {
-		if variable, ok := tmpEnv.Variable[id]; ok {
-			tmpEnv.Variable[id] = value
+		if variable, ok := tmpEnv.Tabla[id]; ok {
+			tmpEnv.Tabla[id] = value
 			return variable
 		}
 		if tmpEnv.Anterior == nil {
@@ -65,5 +64,5 @@ func (env Environment) SetVariable(id string, value Symbol) Symbol {
 		}
 	}
 	fmt.Println("La variable ", id, " no existe")
-	return Symbol{Lin: 0, Col: 0, Id: "", Tipo: NIL}
+	return Symbol{Lin: 0, Col: 0, Tipo: NIL, Posicion: 0}
 }

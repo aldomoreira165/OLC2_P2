@@ -1,26 +1,35 @@
 package lenguaje
 
-import (
-	arrayList "interprete/lenguaje/arraylist"
-)
+import "fmt"
 
 type Value struct {
-	Value        string
-	IsTemp       bool
-	Type         TipoExpresion
-	TrueLabel    *arrayList.List
-	FalseLabel   *arrayList.List
-	OutLabel     *arrayList.List
+	Value      string
+	IsTemp     bool
+	Type       TipoExpresion
+	TrueLabel  []interface{}
+	FalseLabel []interface{}
+	OutLabel   []interface{}
+	IntValue   int
 }
 
 func NewValue(Val string, tmp bool, typ TipoExpresion) Value {
 	result := Value{
-		Value:        Val,
-		IsTemp:       tmp,
-		Type:         typ,
-		TrueLabel:    arrayList.New(),
-		FalseLabel:   arrayList.New(),
-		OutLabel:     arrayList.New(),
+		Value:    Val,
+		IsTemp:   tmp,
+		Type:     typ,
+		IntValue: 0,
 	}
 	return result
+}
+
+func getDataValue(v Value) {
+	fmt.Println("--- Value ---")
+	fmt.Println("Value: ", v.Value)
+	fmt.Println("IsTemp: ", v.IsTemp)
+	fmt.Println("Type: ", v.Type)
+	fmt.Println("TrueLabel: ", v.TrueLabel)
+	fmt.Println("FalseLabel: ", v.FalseLabel)
+	fmt.Println("OutLabel: ", v.OutLabel)
+	fmt.Println("IntValue: ", v.IntValue)
+	fmt.Println("--------------")
 }

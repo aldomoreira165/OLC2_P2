@@ -10,11 +10,13 @@ import (
 type Visitor struct {
 	antlr.ParseTreeVisitor
 	generator Generator
+	entorno Environment
 }
 
 func NewVisitor() parser.SwiftGrammarVisitor {
 	return &Visitor{
-		generator: NewGenerator(),	
+		generator: NewGenerator(),
+		entorno:   NewEnvironment(nil, "global"),	
 	}
 }
 
@@ -24,10 +26,9 @@ func (l *Visitor) VisitS(ctx *parser.SContext) interface{} {
 
 	var out string
 
-	for _, val := range l.generator.GetFinalCode().ToArray(){
+	for _, val := range l.generator.GetFinalCode(){
 		out = out + fmt.Sprintf("%v", val)
 	}
-
 	return out
 }
 

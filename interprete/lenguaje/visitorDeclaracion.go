@@ -1,7 +1,9 @@
 package lenguaje
+
 import (
+	"fmt"
 	"interprete/Parser"
-	arrayList "interprete/lenguaje/arraylist"
+	"strconv"
 )
 
 // variables
@@ -15,7 +17,17 @@ func (l *Visitor) VisitOptionalTypedDeclstmt(ctx *parser.OptionalTypedDeclstmtCo
 }
 
 func (l *Visitor) VisitUntypedDeclstmt(ctx *parser.UntypedDeclstmtContext) interface{} {
-	return nil
+	fmt.Println("Declaracion de variable sin tipo")
+	idVar := ctx.ID().GetText()
+	var result Value
+	var newVar Symbol
+	result = l.Visit(ctx.Expr()).(Value)
+	newVar = l.entorno.SaveVariable(idVar, result.Type, ctx.GetStart().GetLine(), ctx.GetStart().GetColumn())
+	
+	l.generator.AddSetStack(strconv.Itoa(newVar.Posicion), result.Value)
+	l.generator.AddBr()
+
+	return result
 }
 
 // vectores
@@ -35,11 +47,10 @@ func (l *Visitor) VisitDefVectorID(ctx *parser.DefVectorIDContext) interface{} {
 
 // lista de valores
 func (l *Visitor) VisitListaexpresiones(ctx *parser.ListaexpresionesContext) interface{} {
-	var list arrayList.List
-	list = *arrayList.New()
+	var list []interface{}
 	for _, exp := range ctx.AllExpr() {
 		value := l.Visit(exp).(Value)
-		list.Add(value)
+		list = append(list, value)
 	} 
 	return list
 }

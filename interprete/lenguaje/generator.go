@@ -2,55 +2,53 @@ package lenguaje
 
 import (
 	"fmt"
-	arrayList "interprete/lenguaje/arraylist"
+	"strings"
 )
 
 type Generator struct {
-	Temporal         int
-	Label            int
-	Code             *arrayList.List
-	FinalCode        *arrayList.List
-	Natives          *arrayList.List
-	FuncCode         *arrayList.List
-	TempList         *arrayList.List
+	Temporal      int
+	Label         int
+	Code          []interface{}
+	FinalCode     []interface{}
+	Natives       []interface{}
+	FuncCode      []interface{}
+	TempList      []interface{}
 	PrintStringFlag  bool
 	ConcatStringFlag bool
-	BreakLabel       string
-	ContinueLabel    string
-	MainCode         bool
+	BreakLabel    string
+	ContinueLabel string
+	MainCode      bool
 }
 
 func NewGenerator() Generator {
 	generator := Generator{
-		Temporal:         0,
-		Label:            0,
-		Code:             arrayList.New(),
-		FinalCode:        arrayList.New(),
-		Natives:          arrayList.New(),
-		FuncCode:         arrayList.New(),
-		TempList:         arrayList.New(),
+		Temporal:      0,
+		Label:         0,
+		Code:             []interface{}{},
+		FinalCode:        []interface{}{},
+		Natives:          []interface{}{},
+		FuncCode:         []interface{}{},
+		TempList:         []interface{}{},
 		PrintStringFlag:  true,
 		ConcatStringFlag: true,
-		BreakLabel:       "",
-		ContinueLabel:    "",
-		//se deja en true temporalmente
-		MainCode: true,
+		BreakLabel:    "",
+		ContinueLabel: "",
+		MainCode:      true,
 	}
 	return generator
 }
 
-func (g Generator) GetCode() *arrayList.List {
+func (g Generator) GetCode() []interface{} {
 	return g.Code
 }
 
-func (g Generator) GetFinalCode() *arrayList.List {
+func (g Generator) GetFinalCode() []interface{} {
 	return g.FinalCode
 }
 
-func (g Generator) GetTemps() *arrayList.List {
+func (g Generator) GetTemps() []interface{} {
 	return g.TempList
 }
-
 // add break lvl
 func (g *Generator) AddBreak(lvl string) {
 	g.BreakLabel = lvl
@@ -66,7 +64,7 @@ func (g *Generator) NewTemp() string {
 	temp := "t" + fmt.Sprintf("%v", g.Temporal)
 	g.Temporal = g.Temporal + 1
 	//Lo guardamos para declararlo
-	g.TempList.Add(temp)
+	g.TempList = append(g.TempList, temp)
 	return temp
 }
 
@@ -80,172 +78,187 @@ func (g *Generator) NewLabel() string {
 // Añade Label al codigo
 func (g *Generator) AddLabel(Label string) {
 	if g.MainCode {
-		g.Code.Add(Label + ":\n")
+		g.Code = append(g.Code, Label+":\n")
 	} else {
-		g.FuncCode.Add(Label + ":\n")
+		g.FuncCode = append(g.FuncCode, Label+":\n")
 	}
 }
 
 func (g *Generator) AddIf(left string, right string, operator string, Label string) {
 	if g.MainCode {
-		g.Code.Add("if(" + left + " " + operator + " " + right + ") goto " + Label + ";\n")
+		g.Code = append(g.Code, "if("+left+" "+operator+" "+right+") goto "+Label+";\n")
 	} else {
-		g.FuncCode.Add("if(" + left + " " + operator + " " + right + ") goto " + Label + ";\n")
+		g.FuncCode = append(g.FuncCode, "if("+left+" "+operator+" "+right+") goto "+Label+";\n")
+	}
+}
+func (g *Generator) RemoveLastGoto() {
+	var codeSlice []interface{}
+	if g.MainCode {
+		codeSlice = g.Code
+	} else {
+		codeSlice = g.FuncCode
+	}
+
+	if len(codeSlice) > 0 && strings.HasPrefix(fmt.Sprintf("%v", codeSlice[len(codeSlice)-1]), "goto") {
+		codeSlice = codeSlice[:len(codeSlice)-1]
+	}
+
+	if g.MainCode {
+		g.Code = codeSlice
+	} else {
+		g.FuncCode = codeSlice
 	}
 }
 
 func (g *Generator) AddGoto(Label string) {
 	if g.MainCode {
-		g.Code.Add("goto " + Label + ";\n")
+		g.Code = append(g.Code, "goto "+Label+";\n")
 	} else {
-		g.FuncCode.Add("goto " + Label + ";\n")
+		g.FuncCode = append(g.FuncCode, "goto "+Label+";\n")
 	}
 }
 
 func (g *Generator) AddExpression(target string, left string, right string, operator string) {
-	if g.MainCode {
-		g.Code.Add(target + " = " + left + " " + operator + " " + right + ";\n")
-	} else {
-		g.FuncCode.Add(target + " = " + left + " " + operator + " " + right + ";\n")
+	if g.MainCode {	
+		g.Code = append(g.Code, target+" = "+left+" "+operator+" "+right+";\n")
+	} else {	
+		g.FuncCode = append(g.FuncCode, target+" = "+left+" "+operator+" "+right+";\n")
 	}
 }
 
 func (g *Generator) AddAssign(target, val string) {
 	if g.MainCode {
-		g.Code.Add(target + " = " + val + ";\n")
+		g.Code = append(g.Code, target+" = "+val+";\n")
 	} else {
-		g.FuncCode.Add(target + " = " + val + ";\n")
-	}
-}
-
-func (g *Generator) AddPrintf(typePrint string, value string) {
-	if g.MainCode {
-		g.Code.Add("printf(\"%" + typePrint + "\", " + value + ");\n")
-	} else {
-		g.FuncCode.Add("printf(\"%" + typePrint + "\", " + value + ");\n")
+		g.FuncCode = append(g.FuncCode, target+" = "+val+";\n")
 	}
 }
 
 func (g *Generator) AddSetHeap(index string, value string) {
 	if g.MainCode {
-		g.Code.Add("heap[" + index + "] = " + value + ";\n")
+		g.Code=append(g.Code,"heap[" + index + "] = " + value + ";\n")
 	} else {
-		g.FuncCode.Add("heap[" + index + "] = " + value + ";\n")
+		g.FuncCode=append(g.FuncCode,"heap[" + index + "] = " + value + ";\n")
 	}
 }
 
 func (g *Generator) AddGetHeap(target string, index string) {
 	if g.MainCode {
-		g.Code.Add(target + " = heap[" + index + "];\n")
+		g.Code=append(g.Code,target + " = heap[" + index + "];\n")
 	} else {
-		g.FuncCode.Add(target + " = heap[" + index + "];\n")
+		g.FuncCode=append(g.FuncCode,target + " = heap[" + index + "];\n")
 	}
 }
 
 func (g *Generator) AddSetStack(index string, value string) {
 	if g.MainCode {
-		g.Code.Add("stack[" + index + "] = " + value + ";\n")
+		g.Code=append(g.Code,"stack[" + index + "] = " + value + ";\n")
 	} else {
-		g.FuncCode.Add("stack[" + index + "] = " + value + ";\n")
+		g.FuncCode=append(g.FuncCode,"stack[" + index + "] = " + value + ";\n")
 	}
 }
 
 func (g *Generator) AddGetStack(target string, index string) {
 	if g.MainCode {
-		g.Code.Add(target + " = stack[" + index + "];\n")
+		g.Code=append(g.Code,target + " = stack[" + index + "];\n")
 	} else {
-		g.FuncCode.Add(target + " = stack[" + index + "];\n")
+		g.FuncCode=append(g.FuncCode,target + " = stack[" + index + "];\n")
 	}
 }
 
 func (g *Generator) AddCall(target string) {
 	if g.MainCode {
-		g.Code.Add(target + "();\n")
+		g.Code=append(g.Code,target + "();\n")
 	} else {
-		g.FuncCode.Add(target + "();\n")
+		g.FuncCode=append(g.FuncCode,target + "();\n")
+	}
+}
+func (g *Generator) AddPrintf(typePrint string, value string) {
+	if g.MainCode {
+		g.Code = append(g.Code, "printf(\"%"+typePrint+"\", "+value+");\n")
+	} else {
+		g.FuncCode = append(g.FuncCode, "printf(\"%"+typePrint+"\", "+value+");\n")
 	}
 }
 
 func (g *Generator) AddBr() {
 	if g.MainCode {
-		g.Code.Add("\n")
+		g.Code = append(g.Code, "\n")
 	} else {
-		g.FuncCode.Add("\n")
+		g.FuncCode = append(g.FuncCode, "\n")
 	}
-
 }
 
 func (g *Generator) AddComment(target string) {
 	if g.MainCode {
-		g.Code.Add("//" + target + "\n")
+		g.Code = append(g.Code, "//"+target+"\n")
 	} else {
-		g.FuncCode.Add("//" + target + "\n")
+		g.FuncCode = append(g.FuncCode, "//"+target+"\n")
 	}
 }
 
 func (g *Generator) AddTittle(target string) {
 	if g.MainCode {
-		g.Code.Add("void " + target + "() {\n")
+		g.Code = append(g.Code,"void " + target + "() {\n") 
 	} else {
-		g.FuncCode.Add("void " + target + "() {\n")
+		g.FuncCode = append(g.FuncCode,"void " + target + "() {\n")
 	}
 }
 
 func (g *Generator) AddEnd() {
 	if g.MainCode {
-		g.Code.Add("\treturn;\n")
-		g.Code.Add("}\n\n")
+		g.Code = append(g.Code,"\treturn;\n")
+		g.Code = append(g.Code,"}\n\n")
 	} else {
-		g.FuncCode.Add("\treturn;\n")
-		g.FuncCode.Add("}\n\n")
+		g.FuncCode = append(g.FuncCode,"\treturn;\n")
+		g.FuncCode = append(g.FuncCode,"}\n\n")
 	}
 }
 
-// agregar headers
+//agregar headers
 func (g *Generator) GenerateFinalCode() {
 	//****************** add head
-	g.FinalCode.Add("/*------HEADER------*/\n")
-	g.FinalCode.Add("#include <stdio.h>\n")
-	g.FinalCode.Add("double heap[10000];\n")
-	g.FinalCode.Add("double stack[10000];\n")
-	g.FinalCode.Add("double P;\n")
-	g.FinalCode.Add("double H;\n")
-
-	if g.GetTemps().Len() > 0 {
-		g.FinalCode.Add("double ")
+	g.FinalCode = append(g.FinalCode,"/*- Area de header -*/\n")
+	g.FinalCode = append(g.FinalCode,"#include <stdio.h>\n")
+	g.FinalCode= append(g.FinalCode,"#include <math.h>\n")
+	g.FinalCode= append(g.FinalCode,"double heap[30101999];\n")
+	g.FinalCode= append(g.FinalCode,"double stack[30101999];\n")
+	g.FinalCode= append(g.FinalCode,"double P;\n")
+	g.FinalCode= append(g.FinalCode,"double H;\n")
+	
+	if len(g.GetTemps()) > 0 {
 		//****************** add temporal declaration
-		tmpDec := fmt.Sprintf("%v", g.GetTemps().GetValue(0))
-		fmt.Println("temporales", g.GetTemps().ToArray())
-		g.GetTemps().RemoveAtIndex(0)
-		for _, s := range g.GetTemps().ToArray() {
-			tmpDec += ", "
-			tmpDec += fmt.Sprintf("%v", s)
+		fmt.Println("Temps: ", g.GetTemps())
+		fmt.Println("Temps: ", len(g.GetTemps()))
+		g.FinalCode= append(g.FinalCode,"double ")
+		for i, s := range g.GetTemps() {
+			g.FinalCode= append(g.FinalCode,fmt.Sprintf("%v", s))
+			if i < len(g.GetTemps())-1{
+				g.FinalCode= append(g.FinalCode,", ")
+			}
 		}
-		tmpDec += ";\n\n"
-		g.FinalCode.Add(tmpDec)
+		g.FinalCode= append(g.FinalCode,";\n")
 	}
+	
+	g.FinalCode= append(g.FinalCode,"\n")
 	//****************** add natives functions
-	if g.Natives.Len() > 0 {
-		g.FinalCode.Add("/*------NATIVES------*/\n")
-		for _, s := range g.Natives.ToArray() {
-			g.FinalCode.Add(s)
-		}
+	if len(g.Natives) > 0 {
+		g.FinalCode = append(g.FinalCode,"/*- Area de Natives -*/\n")
+		g.FinalCode = append(g.FinalCode, g.Natives...)
 	}
 	//****************** add functions
-	if g.FuncCode.Len() > 0 {
-		g.FinalCode.Add("/*------FUNCTIONS------*/\n")
-		for _, s := range g.FuncCode.ToArray() {
-			g.FinalCode.Add(s)
-		}
+	if len(g.FuncCode) > 0 {
+		g.FinalCode = append(g.FinalCode,"/*- Area de funciones -*/\n")
+		g.FinalCode = append(g.FinalCode, g.FuncCode...)
 	}
 	//****************** add main
-	g.FinalCode.Add("/*------MAIN------*/\n")
-	g.FinalCode.Add("void main() {\n")
-	g.FinalCode.Add("\tP = 0; H = 0;\n\n")
-	for _, s := range g.Code.ToArray() {
-		g.FinalCode.Add("\t" + s.(string))
+	g.FinalCode = append(g.FinalCode,"/*- Area de main -*/\n")
+	g.FinalCode= append(g.FinalCode,"int main() {\n")
+	g.FinalCode= append(g.FinalCode,"\tP = 0; H = 0;\n\n")
+	for _, s := range g.Code {
+		g.FinalCode= append(g.FinalCode,"\t" + s.(string))
 	}
-	g.FinalCode.Add("\n\treturn;\n}\n")
+	g.FinalCode= append(g.FinalCode,"\n\treturn 0;\n}\n")
 }
 
 func (g *Generator) GeneratePrintString() {
@@ -257,18 +270,18 @@ func (g *Generator) GeneratePrintString() {
 		newLvl1 := g.NewLabel()
 		newLvl2 := g.NewLabel()
 		//se genera la funcion printstring
-		g.Natives.Add("void printString() {\n")
-		g.Natives.Add("\t" + newTemp1 + " = P + 1;\n")
-		g.Natives.Add("\t" + newTemp2 + " = stack[(int)" + newTemp1 + "];\n")
-		g.Natives.Add("\t" + newLvl2 + ":\n")
-		g.Natives.Add("\t" + newTemp3 + " = heap[(int)" + newTemp2 + "];\n")
-		g.Natives.Add("\tif(" + newTemp3 + " == -1) goto " + newLvl1 + ";\n")
-		g.Natives.Add("\tprintf(\"c\", (char)" + newTemp3 + ");\n")
-		g.Natives.Add("\t" + newTemp2 + " = " + newTemp2 + " + 1;\n")
-		g.Natives.Add("\tgoto " + newLvl2 + ";\n")
-		g.Natives.Add("\t" + newLvl1 + ":\n")
-		g.Natives.Add("\treturn;\n")
-		g.Natives.Add("}\n\n")
+		g.Natives=append(g.Natives,"void printString() {\n")
+		g.Natives=append(g.Natives,"\t" + newTemp1 + " = P + 1;\n")
+		g.Natives=append(g.Natives,"\t" + newTemp2 + " = stack[(int)" + newTemp1 + "];\n")
+		g.Natives=append(g.Natives,"\t" + newLvl2 + ":\n")
+		g.Natives=append(g.Natives,"\t" + newTemp3 + " = heap[(int)" + newTemp2 + "];\n")
+		g.Natives=append(g.Natives,"\tif(" + newTemp3 + " == -1) goto " + newLvl1 + ";\n")
+		g.Natives=append(g.Natives,"\tprintf(\"%c\", (char)" + newTemp3 + ");\n")
+		g.Natives=append(g.Natives,"\t" + newTemp2 + " = " + newTemp2 + " + 1;\n")
+		g.Natives=append(g.Natives,"\tgoto " + newLvl2 + ";\n")
+		g.Natives=append(g.Natives,"\t" + newLvl1 + ":\n")
+		g.Natives=append(g.Natives,"\treturn;\n")
+		g.Natives=append(g.Natives,"}\n\n")
 		g.PrintStringFlag = false
 	}
 }
@@ -286,55 +299,47 @@ func (g *Generator) GenerateConcatString() {
 		lvl3 := g.NewLabel()
 		lvl4 := g.NewLabel()
 		//se genera la funcion printstring
-		g.Natives.Add("void dbrust_concatString() {\n")
-		g.Natives.Add("\t" + tmp1 + " = H;" + "\n")
-		g.Natives.Add("\t" + tmp2 + " = P + 1;" + "\n")
-		g.Natives.Add("\t" + tmp4 + " = stack[(int)" + tmp2 + "];" + "\n")
-		g.Natives.Add("\t" + tmp3 + " = P + 2;" + "\n")
-		g.Natives.Add("\t" + lvl2 + ":" + "\n")
-		g.Natives.Add("\t" + tmp5 + " = heap[(int)" + tmp4 + "];" + "\n")
-		g.Natives.Add("\t" + "if(" + tmp5 + " == -1) goto " + lvl3 + ";" + "\n")
-		g.Natives.Add("\t" + "heap[(int)H] = " + tmp5 + ";" + "\n")
-		g.Natives.Add("\t" + "H = H + 1;" + "\n")
-		g.Natives.Add("\t" + tmp4 + " = " + tmp4 + " + 1;" + "\n")
-		g.Natives.Add("\t" + "goto " + lvl2 + ";" + "\n")
-		g.Natives.Add("\t" + lvl3 + ":" + "\n")
-		g.Natives.Add("\t" + tmp4 + " = stack[(int)" + tmp3 + "];" + "\n")
-		g.Natives.Add("\t" + lvl4 + ":" + "\n")
-		g.Natives.Add("\t" + tmp5 + " = heap[(int)" + tmp4 + "];" + "\n")
-		g.Natives.Add("\t" + "if(" + tmp5 + " == -1) goto " + lvl1 + ";" + "\n")
-		g.Natives.Add("\t" + "heap[(int)H] = " + tmp5 + ";" + "\n")
-		g.Natives.Add("\t" + "H = H + 1;" + "\n")
-		g.Natives.Add("\t" + tmp4 + " = " + tmp4 + " + 1;" + "\n")
-		g.Natives.Add("\t" + "goto " + lvl4 + ";" + "\n")
-		g.Natives.Add("\t" + lvl1 + ":" + "\n")
-		g.Natives.Add("\t" + "heap[(int)H] = -1;" + "\n")
-		g.Natives.Add("\t" + "H = H + 1;" + "\n")
-		g.Natives.Add("\t" + "stack[(int)P] = " + tmp1 + ";" + "\n")
-		g.Natives.Add("\treturn;\n")
-		g.Natives.Add("}\n\n")
+		g.Natives = append(g.Natives,"void concatString() {\n") 
+		g.Natives = append(g.Natives,"\t" + tmp1 + " = H;" + "\n")
+		g.Natives = append(g.Natives,"\t" + tmp2 + " = P + 1;" + "\n")
+		g.Natives = append(g.Natives,"\t" + tmp4 + " = stack[(int)" + tmp2 + "];" + "\n")
+		g.Natives = append(g.Natives,"\t" + tmp3 + " = P + 2;" + "\n")
+		g.Natives = append(g.Natives,"\t" + lvl2 + ":" + "\n")
+		g.Natives = append(g.Natives,"\t" + tmp5 + " = heap[(int)" + tmp4 + "];" + "\n")
+		g.Natives = append(g.Natives,"\t" + "if(" + tmp5 + " == -1) goto " + lvl3 + ";" + "\n")
+		g.Natives = append(g.Natives,"\t" + "heap[(int)H] = " + tmp5 + ";" + "\n")
+		g.Natives = append(g.Natives,"\t" + "H = H + 1;" + "\n")
+		g.Natives = append(g.Natives,"\t" + tmp4 + " = " + tmp4 + " + 1;" + "\n")
+		g.Natives = append(g.Natives,"\t" + "goto " + lvl2 + ";" + "\n")
+		g.Natives = append(g.Natives,"\t" + lvl3 + ":" + "\n")
+		g.Natives = append(g.Natives,"\t" + tmp4 + " = stack[(int)" + tmp3 + "];" + "\n")
+		g.Natives = append(g.Natives,"\t" + lvl4 + ":" + "\n")
+		g.Natives = append(g.Natives,"\t" + tmp5 + " = heap[(int)" + tmp4 + "];" + "\n")
+		g.Natives = append(g.Natives,"\t" + "if(" + tmp5 + " == -1) goto " + lvl1 + ";" + "\n")
+		g.Natives = append(g.Natives,"\t" + "heap[(int)H] = " + tmp5 + ";" + "\n")
+		g.Natives = append(g.Natives,"\t" + "H = H + 1;" + "\n")
+		g.Natives = append(g.Natives,"\t" + tmp4 + " = " + tmp4 + " + 1;" + "\n")
+		g.Natives = append(g.Natives,"\t" + "goto " + lvl4 + ";" + "\n")
+		g.Natives = append(g.Natives,"\t" + lvl1 + ":" + "\n")
+		g.Natives = append(g.Natives,"\t" + "heap[(int)H] = -1;" + "\n")
+		g.Natives = append(g.Natives,"\t" + "H =	 H + 1;" + "\n")
+		g.Natives = append(g.Natives,"\t" + "stack[(int)P] = " + tmp1 + ";" + "\n")
+		g.Natives = append(g.Natives,"\treturn;\n")
+		g.Natives = append(g.Natives,"}\n\n")
+		g.ConcatStringFlag = false
 	}
 }
-
-func (g *Generator) reportarErrorOperacion() {
-	//operacion invalida
-	g.AddPrintf("c", "(char)79")
-	g.AddPrintf("c", "(char)112")
-	g.AddPrintf("c", "(char)101")
-	g.AddPrintf("c", "(char)114")
-	g.AddPrintf("c", "(char)97")
-	g.AddPrintf("c", "(char)99")
-	g.AddPrintf("c", "(char)105")
-	g.AddPrintf("c", "(char)111")
-	g.AddPrintf("c", "(char)110")
-	g.AddPrintf("c", "(char)32")
-	g.AddPrintf("c", "(char)105")
-	g.AddPrintf("c", "(char)110")
-	g.AddPrintf("c", "(char)118")
-	g.AddPrintf("c", "(char)97")
-	g.AddPrintf("c", "(char)108")
-	g.AddPrintf("c", "(char)105")
-	g.AddPrintf("c", "(char)100")
-	g.AddPrintf("c", "(char)97")
-	g.AddPrintf("c", "(char)10")
+func (g *Generator) Reset() {
+    g.Temporal = 0
+    g.Label = 0
+    g.Code = []interface{}{}
+    g.FinalCode = []interface{}{}
+    g.Natives = []interface{}{}
+    g.FuncCode = []interface{}{}
+    g.TempList = []interface{}{}
+    g.PrintStringFlag = true
+    g.ConcatStringFlag = true
+    g.BreakLabel = ""
+    g.ContinueLabel = ""
+    g.MainCode = true
 }

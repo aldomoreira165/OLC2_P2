@@ -6,19 +6,30 @@ import (
 
 // Visit del if
 func (l *Visitor) VisitIfstmt(ctx *parser.IfstmtContext) interface{} {
-    l.generator.AddComment("generando if")
-    var condicion Value
-    condicion = l.Visit(ctx.Expr()).(Value)
-
-
-
-	for _, lvl := range condicion.TrueLabel.ToArray() {
+	l.generator.AddComment("Inicio de if")
+	var condicion, result Value
+	condicion = l.Visit(ctx.Expr()).(Value)
+	var OutLvls []interface{}
+	newLabel := l.generator.NewLabel()
+	for _, lvl := range condicion.TrueLabel {
 		l.generator.AddLabel(lvl.(string))
 	}
 
-	l.Visit(ctx.Block(0))
-	
-    return nil
+	for i := 0; ctx.Stmt(i) != nil; i++ {
+		result = l.Visit(ctx.Stmt(i)).(Value)
+
+		for _, lvl := range result.OutLabel {
+			OutLvls = append(OutLvls, lvl)
+		}
+	}
+		
+
+	l.generator.AddGoto(newLabel)
+	//*****************************************add false labels
+	for _, lvl := range condicion.FalseLabel {
+		l.generator.AddLabel(lvl.(string))
+	}
+	return result
 }
 
 

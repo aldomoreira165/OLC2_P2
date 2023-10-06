@@ -210,7 +210,7 @@ parametroscall
 //sentencias de control de flujo
 
 ifstmt  
-    : IF expr LLAVEIZQ block LLAVEDER (elseifstmt)* (ELSE LLAVEIZQ block LLAVEDER)?
+    : IF expr LLAVEIZQ (stmt)* LLAVEDER (elseifstmt)* (ELSE LLAVEIZQ (stmt)* LLAVEDER)?
     ;
 
 elseifstmt: ELSE IF expr LLAVEIZQ block LLAVEDER;
