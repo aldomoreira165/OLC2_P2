@@ -230,7 +230,7 @@ untypedDeclstmt
     ;
 
 optionalTypedDeclstmt
-    : VAR ID DOSPUNTOS tipo INTERROGACION                          
+    : (VAR|LET) ID DOSPUNTOS tipo INTERROGACION                          
     ;
 
 asignstmt

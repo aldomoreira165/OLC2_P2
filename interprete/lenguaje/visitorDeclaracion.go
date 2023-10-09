@@ -10,14 +10,21 @@ import (
 func (l *Visitor) VisitTypedDeclstmt(ctx *parser.TypedDeclstmtContext) interface{} {
 	var result Value
 	var newVar Symbol
+	var constVar bool
 	idVar := ctx.ID().GetText()
 	typeVar := ctx.Tipo().GetText()
 	result = l.Visit(ctx.Expr()).(Value)
 	typeString := ObtenerTipo(result.Type)
 
+	if ctx.LET() != nil {
+		constVar = true
+	} else {
+		constVar = false
+	}
+
 	if typeVar == typeString {
 		l.generator.AddComment("Declaracion de variable con tipo")
-		newVar = l.entorno.SaveVariable(idVar, result.Type, ctx.GetStart().GetLine(), ctx.GetStart().GetColumn())
+		newVar = l.entorno.SaveVariable(idVar, result.Type, constVar, ctx.GetStart().GetLine(), ctx.GetStart().GetColumn())
 
 		if newVar.Col == 0 && newVar.Lin == 0 && newVar.Tipo == NIL && newVar.Posicion == 0 {
 			l.generator.AddErrorDeclaracion()
@@ -47,7 +54,7 @@ func (l *Visitor) VisitTypedDeclstmt(ctx *parser.TypedDeclstmtContext) interface
 	} else if typeVar == "float" && result.Type == INTEGER {
 		//convertir a float
 		l.generator.AddComment("Declaracion de variable con tipo")
-		newVar = l.entorno.SaveVariable(idVar, FLOAT, ctx.GetStart().GetLine(), ctx.GetStart().GetColumn())
+		newVar = l.entorno.SaveVariable(idVar, FLOAT, constVar, ctx.GetStart().GetLine(), ctx.GetStart().GetColumn())
 		if newVar.Col == 0 && newVar.Lin == 0 && newVar.Tipo == NIL && newVar.Posicion == 0 {
 			l.generator.AddErrorDeclaracion()
 		} else {
@@ -72,13 +79,18 @@ func (l *Visitor) VisitOptionalTypedDeclstmt(ctx *parser.OptionalTypedDeclstmtCo
 	var result Value
 	var newVar Symbol
 
-	newVar = l.entorno.SaveVariable(idVar, tipo, ctx.GetStart().GetLine(), ctx.GetStart().GetColumn())
-
-	if newVar.Col == 0 && newVar.Lin == 0 && newVar.Tipo == NIL && newVar.Posicion == 0 {
+	if ctx.LET() != nil {
+		fmt.Println("let")
 		l.generator.AddErrorDeclaracion()
 	} else {
-		l.generator.AddSetStack(strconv.Itoa(newVar.Posicion), "0")
-		l.generator.AddBr()
+		newVar = l.entorno.SaveVariable(idVar, tipo, false, ctx.GetStart().GetLine(), ctx.GetStart().GetColumn())
+
+		if newVar.Col == 0 && newVar.Lin == 0 && newVar.Tipo == NIL && newVar.Posicion == 0 {
+			l.generator.AddErrorDeclaracion()
+		} else {
+			l.generator.AddSetStack(strconv.Itoa(newVar.Posicion), "0")
+			l.generator.AddBr()
+		}
 	}
 	return result
 }
@@ -86,10 +98,19 @@ func (l *Visitor) VisitOptionalTypedDeclstmt(ctx *parser.OptionalTypedDeclstmtCo
 func (l *Visitor) VisitUntypedDeclstmt(ctx *parser.UntypedDeclstmtContext) interface{} {
 	l.generator.AddComment("Declaracion de variable sin tipo")
 	idVar := ctx.ID().GetText()
+	var constVar bool
 	var result Value
 	var newVar Symbol
 	result = l.Visit(ctx.Expr()).(Value)
-	newVar = l.entorno.SaveVariable(idVar, result.Type, ctx.GetStart().GetLine(), ctx.GetStart().GetColumn())
+	
+
+	if ctx.LET() != nil {
+		constVar = true
+	} else {
+		constVar = false
+	}
+
+	newVar = l.entorno.SaveVariable(idVar, result.Type, constVar, ctx.GetStart().GetLine(), ctx.GetStart().GetColumn())
 
 	if newVar.Col == 0 && newVar.Lin == 0 && newVar.Tipo == NIL && newVar.Posicion == 0 {
 		l.generator.AddErrorDeclaracion()

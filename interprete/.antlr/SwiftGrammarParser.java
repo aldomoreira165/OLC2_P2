@@ -3959,13 +3959,14 @@ public class SwiftGrammarParser extends Parser {
 
 	@SuppressWarnings("CheckReturnValue")
 	public static class OptionalTypedDeclstmtContext extends ParserRuleContext {
-		public TerminalNode VAR() { return getToken(SwiftGrammarParser.VAR, 0); }
 		public TerminalNode ID() { return getToken(SwiftGrammarParser.ID, 0); }
 		public TerminalNode DOSPUNTOS() { return getToken(SwiftGrammarParser.DOSPUNTOS, 0); }
 		public TipoContext tipo() {
 			return getRuleContext(TipoContext.class,0);
 		}
 		public TerminalNode INTERROGACION() { return getToken(SwiftGrammarParser.INTERROGACION, 0); }
+		public TerminalNode VAR() { return getToken(SwiftGrammarParser.VAR, 0); }
+		public TerminalNode LET() { return getToken(SwiftGrammarParser.LET, 0); }
 		public OptionalTypedDeclstmtContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
 		}
@@ -3983,11 +3984,20 @@ public class SwiftGrammarParser extends Parser {
 	public final OptionalTypedDeclstmtContext optionalTypedDeclstmt() throws RecognitionException {
 		OptionalTypedDeclstmtContext _localctx = new OptionalTypedDeclstmtContext(_ctx, getState());
 		enterRule(_localctx, 94, RULE_optionalTypedDeclstmt);
+		int _la;
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
 			setState(610);
-			match(VAR);
+			_la = _input.LA(1);
+			if ( !(_la==VAR || _la==LET) ) {
+			_errHandler.recoverInline(this);
+			}
+			else {
+				if ( _input.LA(1)==Token.EOF ) matchedEOF = true;
+				_errHandler.reportMatch(this);
+				consume();
+			}
 			setState(611);
 			match(ID);
 			setState(612);
@@ -5985,7 +5995,7 @@ public class SwiftGrammarParser extends Parser {
 		"\u025b\u0005,\u0000\u0000\u025b\u025c\u0003l6\u0000\u025c[\u0001\u0000"+
 		"\u0000\u0000\u025d\u025e\u0007\u0000\u0000\u0000\u025e\u025f\u0005&\u0000"+
 		"\u0000\u025f\u0260\u0005,\u0000\u0000\u0260\u0261\u0003l6\u0000\u0261"+
-		"]\u0001\u0000\u0000\u0000\u0262\u0263\u0005\u0013\u0000\u0000\u0263\u0264"+
+		"]\u0001\u0000\u0000\u0000\u0262\u0263\u0007\u0000\u0000\u0000\u0263\u0264"+
 		"\u0005&\u0000\u0000\u0264\u0265\u0005<\u0000\u0000\u0265\u0266\u0003n"+
 		"7\u0000\u0266\u0267\u0005?\u0000\u0000\u0267_\u0001\u0000\u0000\u0000"+
 		"\u0268\u0269\u0005&\u0000\u0000\u0269\u026a\u0005,\u0000\u0000\u026a\u026b"+

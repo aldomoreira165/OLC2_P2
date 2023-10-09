@@ -349,7 +349,7 @@ func swiftgrammarParserInit() {
 		0, 0, 601, 602, 3, 110, 55, 0, 602, 603, 5, 44, 0, 0, 603, 604, 3, 108,
 		54, 0, 604, 91, 1, 0, 0, 0, 605, 606, 7, 0, 0, 0, 606, 607, 5, 38, 0, 0,
 		607, 608, 5, 44, 0, 0, 608, 609, 3, 108, 54, 0, 609, 93, 1, 0, 0, 0, 610,
-		611, 5, 19, 0, 0, 611, 612, 5, 38, 0, 0, 612, 613, 5, 60, 0, 0, 613, 614,
+		611, 7, 0, 0, 0, 611, 612, 5, 38, 0, 0, 612, 613, 5, 60, 0, 0, 613, 614,
 		3, 110, 55, 0, 614, 615, 5, 63, 0, 0, 615, 95, 1, 0, 0, 0, 616, 617, 5,
 		38, 0, 0, 617, 618, 5, 44, 0, 0, 618, 619, 3, 108, 54, 0, 619, 97, 1, 0,
 		0, 0, 620, 621, 5, 12, 0, 0, 621, 622, 3, 108, 54, 0, 622, 623, 5, 56,
@@ -11418,11 +11418,12 @@ type IOptionalTypedDeclstmtContext interface {
 	GetParser() antlr.Parser
 
 	// Getter signatures
-	VAR() antlr.TerminalNode
 	ID() antlr.TerminalNode
 	DOSPUNTOS() antlr.TerminalNode
 	Tipo() ITipoContext
 	INTERROGACION() antlr.TerminalNode
+	VAR() antlr.TerminalNode
+	LET() antlr.TerminalNode
 
 	// IsOptionalTypedDeclstmtContext differentiates from other interfaces.
 	IsOptionalTypedDeclstmtContext()
@@ -11460,10 +11461,6 @@ func NewOptionalTypedDeclstmtContext(parser antlr.Parser, parent antlr.ParserRul
 
 func (s *OptionalTypedDeclstmtContext) GetParser() antlr.Parser { return s.parser }
 
-func (s *OptionalTypedDeclstmtContext) VAR() antlr.TerminalNode {
-	return s.GetToken(SwiftGrammarParserVAR, 0)
-}
-
 func (s *OptionalTypedDeclstmtContext) ID() antlr.TerminalNode {
 	return s.GetToken(SwiftGrammarParserID, 0)
 }
@@ -11490,6 +11487,14 @@ func (s *OptionalTypedDeclstmtContext) Tipo() ITipoContext {
 
 func (s *OptionalTypedDeclstmtContext) INTERROGACION() antlr.TerminalNode {
 	return s.GetToken(SwiftGrammarParserINTERROGACION, 0)
+}
+
+func (s *OptionalTypedDeclstmtContext) VAR() antlr.TerminalNode {
+	return s.GetToken(SwiftGrammarParserVAR, 0)
+}
+
+func (s *OptionalTypedDeclstmtContext) LET() antlr.TerminalNode {
+	return s.GetToken(SwiftGrammarParserLET, 0)
 }
 
 func (s *OptionalTypedDeclstmtContext) GetRuleContext() antlr.RuleContext {
@@ -11525,13 +11530,18 @@ func (s *OptionalTypedDeclstmtContext) Accept(visitor antlr.ParseTreeVisitor) in
 func (p *SwiftGrammarParser) OptionalTypedDeclstmt() (localctx IOptionalTypedDeclstmtContext) {
 	localctx = NewOptionalTypedDeclstmtContext(p, p.GetParserRuleContext(), p.GetState())
 	p.EnterRule(localctx, 94, SwiftGrammarParserRULE_optionalTypedDeclstmt)
+	var _la int
+
 	p.EnterOuterAlt(localctx, 1)
 	{
 		p.SetState(610)
-		p.Match(SwiftGrammarParserVAR)
-		if p.HasError() {
-			// Recognition error - abort rule
-			goto errorExit
+		_la = p.GetTokenStream().LA(1)
+
+		if !(_la == SwiftGrammarParserVAR || _la == SwiftGrammarParserLET) {
+			p.GetErrorHandler().RecoverInline(p)
+		} else {
+			p.GetErrorHandler().ReportMatch(p)
+			p.Consume()
 		}
 	}
 	{
