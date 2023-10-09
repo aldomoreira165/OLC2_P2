@@ -343,3 +343,53 @@ func (g *Generator) Reset() {
     g.ContinueLabel = ""
     g.MainCode = true
 }
+
+//errores
+
+func (g *Generator) AddErrorAsignacion(){
+	//escribir "error de asignacion"
+	g.Code = append(g.Code, "printf(\"%c\", (char)101);\n")
+	g.Code = append(g.Code, "printf(\"%c\", (char)114);\n")
+	g.Code = append(g.Code, "printf(\"%c\", (char)114);\n")
+	g.Code = append(g.Code, "printf(\"%c\", (char)111);\n")
+	g.Code = append(g.Code, "printf(\"%c\", (char)114);\n")
+	g.Code = append(g.Code, "printf(\"%c\", (char)32);\n")
+	g.Code = append(g.Code, "printf(\"%c\", (char)100);\n")
+	g.Code = append(g.Code, "printf(\"%c\", (char)101);\n")
+	g.Code = append(g.Code, "printf(\"%c\", (char)32);\n")
+	g.Code = append(g.Code, "printf(\"%c\", (char)97);\n")
+	g.Code = append(g.Code, "printf(\"%c\", (char)115);\n")
+	g.Code = append(g.Code, "printf(\"%c\", (char)105);\n")
+	g.Code = append(g.Code, "printf(\"%c\", (char)103);\n")
+	g.Code = append(g.Code, "printf(\"%c\", (char)110);\n")
+	g.Code = append(g.Code, "printf(\"%c\", (char)97);\n")
+	g.Code = append(g.Code, "printf(\"%c\", (char)99);\n")
+	g.Code = append(g.Code, "printf(\"%c\", (char)105);\n")
+	g.Code = append(g.Code, "printf(\"%c\", (char)111);\n")
+	g.Code = append(g.Code, "printf(\"%c\", (char)110);\n")
+	g.Code = append(g.Code, "printf(\"%c\", (char)10);\n")
+}
+
+func (g *Generator) AddErrorDeclaracion(){
+	//escribir "error de declaracion"
+	g.Code = append(g.Code, "printf(\"%c\", (char)101);\n")
+	g.Code = append(g.Code, "printf(\"%c\", (char)114);\n")
+	g.Code = append(g.Code, "printf(\"%c\", (char)114);\n")
+	g.Code = append(g.Code, "printf(\"%c\", (char)111);\n")
+	g.Code = append(g.Code, "printf(\"%c\", (char)114);\n")
+	g.Code = append(g.Code, "printf(\"%c\", (char)32);\n")
+	g.Code = append(g.Code, "printf(\"%c\", (char)100);\n")
+	g.Code = append(g.Code, "printf(\"%c\", (char)101);\n")
+	g.Code = append(g.Code, "printf(\"%c\", (char)32);\n")
+	g.Code = append(g.Code, "printf(\"%c\", (char)97);\n")
+	g.Code = append(g.Code, "printf(\"%c\", (char)115);\n")
+	g.Code = append(g.Code, "printf(\"%c\", (char)105);\n")
+	g.Code = append(g.Code, "printf(\"%c\", (char)103);\n")
+	g.Code = append(g.Code, "printf(\"%c\", (char)110);\n")
+	g.Code = append(g.Code, "printf(\"%c\", (char)97);\n")
+	g.Code = append(g.Code, "printf(\"%c\", (char)99);\n")
+	g.Code = append(g.Code, "printf(\"%c\", (char)105);\n")
+	g.Code = append(g.Code, "printf(\"%c\", (char)111);\n")
+	g.Code = append(g.Code, "printf(\"%c\", (char)110);\n")
+	g.Code = append(g.Code, "printf(\"%c\", (char)10);\n")
+}

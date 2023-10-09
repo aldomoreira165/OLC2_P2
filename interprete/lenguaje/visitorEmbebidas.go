@@ -11,6 +11,7 @@ func (l *Visitor) VisitPrintstmt(ctx *parser.PrintstmtContext) interface{} {
 	var result Value
 	for _, exp := range expresiones {
 		result = exp.(Value)
+		fmt.Println("tipito: ",result.Type)
 		if result.Type == INTEGER {
 			l.generator.AddPrintf("d", "(int)"+fmt.Sprintf("%v", result.Value))
 			l.generator.AddPrintf("c", "(char)10")
@@ -19,7 +20,7 @@ func (l *Visitor) VisitPrintstmt(ctx *parser.PrintstmtContext) interface{} {
 			l.generator.AddPrintf("f", "(float)"+fmt.Sprintf("%v", result.Value))
 			l.generator.AddPrintf("c", "(char)10")
 			l.generator.AddBr()
-		} else if result.Type == STRING {
+		} else if result.Type == STRING || result.Type == CHAR{
 			//llamar a generar printstring
 			l.generator.GeneratePrintString()
 			//agregar codigo en el main

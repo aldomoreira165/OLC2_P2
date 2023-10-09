@@ -12,6 +12,7 @@ type Environment struct {
 }
 
 func NewEnvironment(ant interface{}, id string) Environment {
+	fmt.Println("Creando nuevo entorno")
 	env := Environment{
 		Anterior: ant,
 		Tabla:    make(map[string]Symbol),
@@ -25,7 +26,7 @@ func NewEnvironment(ant interface{}, id string) Environment {
 func (env Environment) SaveVariable(id string, tipo TipoExpresion, linea int, columna int) Symbol {
 	if variable, ok := env.Tabla[id]; ok {
 		fmt.Println("La variable "+id+" ya existe ", variable)
-		return env.Tabla[id]
+		return Symbol{Lin: 0, Col: 0, Tipo: NIL, Posicion: 0}
 	}
 	env.Tabla[id] = Symbol{Lin: linea, Col: columna, Tipo: tipo, Posicion: env.Size["size"]}
 	env.Size["size"] = env.Size["size"] + 1

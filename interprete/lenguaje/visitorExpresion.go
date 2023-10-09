@@ -9,8 +9,6 @@ import (
 
 func (l *Visitor) VisitOpExpr(ctx *parser.OpExprContext) interface{} {
 	op := ctx.GetOp().GetText()
-	op_izq := l.Visit(ctx.GetLeft()).(Value)
-	op_der := l.Visit(ctx.GetRight()).(Value)
 	var dominante TipoExpresion
 
 	suma_resta_dominante := [6][6]TipoExpresion{
@@ -65,6 +63,8 @@ func (l *Visitor) VisitOpExpr(ctx *parser.OpExprContext) interface{} {
 	switch op {
 	case "+":
 		{
+			op_izq := l.Visit(ctx.GetLeft()).(Value)
+			op_der := l.Visit(ctx.GetRight()).(Value)
 			dominante = suma_resta_dominante[op_izq.Type][op_der.Type]
 			fmt.Println("dominante: ", dominante)
 			if dominante == INTEGER || dominante == FLOAT {
@@ -80,12 +80,14 @@ func (l *Visitor) VisitOpExpr(ctx *parser.OpExprContext) interface{} {
 		}
 	case "-":
 		{
+			op_izq := l.Visit(ctx.GetLeft()).(Value)
+			op_der := l.Visit(ctx.GetRight()).(Value)
 			dominante = suma_resta_dominante[op_izq.Type][op_der.Type]
 			if dominante == INTEGER || dominante == FLOAT {
 				l.generator.AddExpression(newTemp, op_izq.Value, op_der.Value, "-")
 				result = NewValue(newTemp, true, dominante)
 				return result
-			}else if dominante == NIL {
+			} else if dominante == NIL {
 				fmt.Println("Error: operacion no valida")
 				//l.generator.reportarErrorOperacion()
 				result = NewValue("", false, NIL)
@@ -94,6 +96,8 @@ func (l *Visitor) VisitOpExpr(ctx *parser.OpExprContext) interface{} {
 		}
 	case "*":
 		{
+			op_izq := l.Visit(ctx.GetLeft()).(Value)
+			op_der := l.Visit(ctx.GetRight()).(Value)
 			dominante = multi_division_dominante[op_izq.Type][op_der.Type]
 			if dominante == INTEGER || dominante == FLOAT {
 				l.generator.AddExpression(newTemp, op_izq.Value, op_der.Value, "*")
@@ -108,6 +112,8 @@ func (l *Visitor) VisitOpExpr(ctx *parser.OpExprContext) interface{} {
 		}
 	case "/":
 		{
+			op_izq := l.Visit(ctx.GetLeft()).(Value)
+			op_der := l.Visit(ctx.GetRight()).(Value)
 			dominante = multi_division_dominante[op_izq.Type][op_der.Type]
 			fmt.Println("dominante: ", dominante)
 			if dominante == INTEGER || dominante == FLOAT {
@@ -141,6 +147,8 @@ func (l *Visitor) VisitOpExpr(ctx *parser.OpExprContext) interface{} {
 		}
 	case "%":
 		{
+			op_izq := l.Visit(ctx.GetLeft()).(Value)
+			op_der := l.Visit(ctx.GetRight()).(Value)
 			dominante = multi_division_dominante[op_izq.Type][op_der.Type]
 			if dominante == INTEGER {
 				lvl1 := l.generator.NewLabel()
@@ -173,6 +181,8 @@ func (l *Visitor) VisitOpExpr(ctx *parser.OpExprContext) interface{} {
 		}
 	case "==":
 		{
+			op_izq := l.Visit(ctx.GetLeft()).(Value)
+			op_der := l.Visit(ctx.GetRight()).(Value)
 			dominante = relacional_dominante[op_izq.Type][op_der.Type]
 			if dominante == INTEGER || dominante == FLOAT {
 				trueLabel := l.generator.NewLabel()
@@ -186,10 +196,36 @@ func (l *Visitor) VisitOpExpr(ctx *parser.OpExprContext) interface{} {
 				result.TrueLabel = append(result.TrueLabel, trueLabel)
 				result.FalseLabel = append(result.FalseLabel, falseLabel)
 				return result
-			} 
+			} else if dominante == BOOLEAN {
+				trueLabel := l.generator.NewLabel()
+				falseLabel := l.generator.NewLabel()
+
+				l.generator.AddIf(op_izq.Value, op_der.Value, "==", trueLabel)
+				l.generator.AddGoto(falseLabel)
+
+				result = NewValue("", false, BOOLEAN)
+				//result = environment.Value{Value: "", IsTemp: false, Type: environment.BOOLEAN}
+				result.TrueLabel = append(result.TrueLabel, trueLabel)
+				result.FalseLabel = append(result.FalseLabel, falseLabel)
+				return result
+			} else if dominante == NIL {
+				trueLabel := l.generator.NewLabel()
+				falseLabel := l.generator.NewLabel()
+
+				l.generator.AddIf(op_izq.Value, op_der.Value, "==", trueLabel)
+				l.generator.AddGoto(falseLabel)
+
+				result = NewValue("", false, BOOLEAN)
+				//result = environment.Value{Value: "", IsTemp: false, Type: environment.BOOLEAN}
+				result.TrueLabel = append(result.TrueLabel, trueLabel)
+				result.FalseLabel = append(result.FalseLabel, falseLabel)
+				return result
+			}
 		}
 	case "!=":
 		{
+			op_izq := l.Visit(ctx.GetLeft()).(Value)
+			op_der := l.Visit(ctx.GetRight()).(Value)
 			dominante = relacional_dominante[op_izq.Type][op_der.Type]
 			if dominante == INTEGER || dominante == FLOAT || dominante == STRING || dominante == CHAR || dominante == BOOLEAN || dominante == NIL {
 				trueLabel := l.generator.NewLabel()
@@ -207,6 +243,8 @@ func (l *Visitor) VisitOpExpr(ctx *parser.OpExprContext) interface{} {
 		}
 	case "<":
 		{
+			op_izq := l.Visit(ctx.GetLeft()).(Value)
+			op_der := l.Visit(ctx.GetRight()).(Value)
 			dominante = relacional_dominante[op_izq.Type][op_der.Type]
 			if dominante == INTEGER || dominante == FLOAT {
 
@@ -231,6 +269,8 @@ func (l *Visitor) VisitOpExpr(ctx *parser.OpExprContext) interface{} {
 		}
 	case ">":
 		{
+			op_izq := l.Visit(ctx.GetLeft()).(Value)
+			op_der := l.Visit(ctx.GetRight()).(Value)
 			dominante = relacional_dominante[op_izq.Type][op_der.Type]
 			if dominante == INTEGER || dominante == FLOAT {
 
@@ -283,26 +323,50 @@ func (l *Visitor) VisitNumExpr(ctx *parser.NumExprContext) interface{} {
 
 func (l *Visitor) VisitIdExpr(ctx *parser.IdExprContext) interface{} {
 	l.generator.AddComment("Llamando a una variable")
+	var result Value
 	id := ctx.GetText()
 	retSym := l.entorno.GetVariable(id)
 	newTemp := l.generator.NewTemp()
 	newTemp2 := l.generator.NewTemp()
 
-	if l.generator.MainCode{
+	if l.generator.MainCode {
 		l.generator.AddGetStack(newTemp2, strconv.Itoa(retSym.Posicion))
-	}else{
+	} else {
 		l.generator.AddExpression(newTemp, "P", strconv.Itoa(retSym.Posicion), "+")
 		l.generator.AddGetStack(newTemp2, "(int)"+newTemp)
 	}
 
-	result := NewValue(newTemp2, true, retSym.Tipo)
+	if retSym.Tipo == BOOLEAN {
+		trueLabel := l.generator.NewLabel()
+		falseLabel := l.generator.NewLabel()
+		l.generator.AddIf(newTemp2, "1", "==", trueLabel)
+		l.generator.AddGoto(falseLabel)
+		result = NewValue("", false, BOOLEAN)
+		result.TrueLabel = append(result.TrueLabel, trueLabel)
+		result.FalseLabel = append(result.FalseLabel, falseLabel)
+	} else {
+		result = NewValue(newTemp2, true, retSym.Tipo)
+		//result.ArrType = retSym.TipoArr
+	}
+
 	return result
 }
 
 func (l *Visitor) VisitStrExpr(ctx *parser.StrExprContext) interface{} {
+	var tipo TipoExpresion
 	strValue := strings.Trim(ctx.GetText(), "\"")
 	fmt.Println("strValue: ", strValue)
-	primitive := NewPrimitive(ctx.GetStart().GetLine(), ctx.GetStart().GetColumn(), strValue, STRING)
+
+	//obtener longitud de cadena para saber si sera string o char
+	strLen := len(strValue)
+
+	if strLen > 1 {
+		tipo = STRING
+	}else{
+		tipo = CHAR
+	}
+
+	primitive := NewPrimitive(ctx.GetStart().GetLine(), ctx.GetStart().GetColumn(), strValue, tipo)
 	//nuevo temporal
 	newTemp := l.generator.NewTemp()
 	//iguala a heap pointer
@@ -325,21 +389,17 @@ func (l *Visitor) VisitStrExpr(ctx *parser.StrExprContext) interface{} {
 }
 
 func (l *Visitor) VisitBoolExpr(ctx *parser.BoolExprContext) interface{} {
-	booleanValue := NewValue(ctx.GetText(), false, BOOLEAN)
+	boolVal := ctx.GetText()
+	var result Value
+	l.generator.AddComment("Primitivo bool")
 	trueLabel := l.generator.NewLabel()
 	falseLabel := l.generator.NewLabel()
-	var value string
-
-	l.generator.AddComment("Primitivo bool")
-	if booleanValue.Value == "true" {
+	if boolVal == "true" {
 		l.generator.AddGoto(trueLabel)
-		value = "1"
 	} else {
 		l.generator.AddGoto(falseLabel)
-		value = "0"
 	}
-
-	result := NewValue(value, false, BOOLEAN)
+	result = NewValue("", false, BOOLEAN)
 	result.TrueLabel = append(result.TrueLabel, trueLabel)
 	result.FalseLabel = append(result.FalseLabel, falseLabel)
 	return result
@@ -347,14 +407,13 @@ func (l *Visitor) VisitBoolExpr(ctx *parser.BoolExprContext) interface{} {
 
 func (l *Visitor) VisitUnariaExpr(ctx *parser.UnariaExprContext) interface{} {
 	expr := l.Visit(ctx.Expr()).(Value)
-	
 
 	if expr.Type == FLOAT {
 		expresion, _ := strconv.ParseFloat(expr.Value, 64)
 		newValue := expresion * -1
 		result := NewValue(fmt.Sprintf("%.1f", newValue), false, FLOAT)
 		return result
-	}else if expr.Type == INTEGER {
+	} else if expr.Type == INTEGER {
 		expresion, _ := strconv.Atoi(expr.Value)
 		newValue := expresion * -1
 		result := NewValue(fmt.Sprintf("%v", newValue), false, INTEGER)
