@@ -15,20 +15,40 @@ func (l *Visitor) VisitIfstmt(ctx *parser.IfstmtContext) interface{} {
 		l.generator.AddLabel(lvl.(string))
 	}
 
-	for i := 0; ctx.Stmt(i) != nil; i++ {
-		result = l.Visit(ctx.Stmt(i)).(Value)
-
-		for _, lvl := range result.OutLabel {
-			OutLvls = append(OutLvls, lvl)
+	if condicion.Type == BOOLEAN {
+		for i := 0; ctx.Stmt(i) != nil; i++ {
+			result = l.Visit(ctx.Stmt(i)).(Value)
+	
+			for _, lvl := range result.OutLabel {
+				OutLvls = append(OutLvls, lvl)
+			}
 		}
-	}
-		
 
+		OutLvls = append(OutLvls, result.OutLabel...)
+	}
+	
+	//l.generator.AddComment("ultimas etiquetas")
 	l.generator.AddGoto(newLabel)
-	//*****************************************add false labels
 	for _, lvl := range condicion.FalseLabel {
 		l.generator.AddLabel(lvl.(string))
 	}
+	//*****************************************add false labels
+
+	//else
+	if ctx.ELSE() != nil {
+		for i := 0; ctx.Stmt(i) != nil; i++ {
+			result = l.Visit(ctx.Stmt(i)).(Value)
+	
+			for _, lvl := range result.OutLabel {
+				OutLvls = append(OutLvls, lvl)
+			}
+		}
+
+		OutLvls = append(OutLvls, result.OutLabel...)
+	}
+
+	OutLvls=append(OutLvls, newLabel)
+	result.OutLabel = OutLvls
 	return result
 }
 

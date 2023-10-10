@@ -1,0 +1,44 @@
+// Función recursiva para calcular el factorial de un número
+func factorial(extN n: int) -> int {
+    if n < 2 {
+        return 1
+    } else {
+        return n * factorial(extN:n - 1)
+    }
+}
+
+// Función recursiva para calcular la función de Ackermann
+func ackermann(extM m: int, extN n: int) -> int {
+    if m == 0 {
+        return n + 1
+    } else if n == 0 {
+        return ackermann(extM:m - 1, extN:1)
+    } else {
+        return ackermann(extM:m - 1, extN:ackermann(extM:m, extN:n - 1))
+    }
+}
+
+print("--------------------------")
+print("----ARCHIVO RECURSIVOS----")
+print("--------------------------")
+print("Factorial de 6: ", factorial(extN:6))
+print("Factorial de 4: ", factorial(extN:4))
+print("Factorial de 3: ", factorial(extN:3))
+print("")
+print("Ackerman de 3,0: ", ackermann(extM:3, extN:0))
+print("Ackerman de 2,8: ", ackermann(extM:2, extN:8))
+print("Ackerman de 2,1: ", ackermann(extM:2, extN:1))
+
+
+/*
+--------------------------
+----ARCHIVO RECURSIVOS----
+--------------------------
+Factorial de 6:  720
+Factorial de 4:  24
+Factorial de 3:  6
+
+Ackerman de 3,0:  5
+Ackerman de 2,8:  19
+Ackerman de 2,1:  5
+*/

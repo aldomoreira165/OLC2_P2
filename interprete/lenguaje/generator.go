@@ -393,3 +393,26 @@ func (g *Generator) AddErrorDeclaracion(){
 	g.Code = append(g.Code, "printf(\"%c\", (char)110);\n")
 	g.Code = append(g.Code, "printf(\"%c\", (char)10);\n")
 }
+
+func (g *Generator) AddErrorOperacion(){
+	//escribir "error de operacion"
+	g.Code = append(g.Code, "printf(\"%c\", (char)101);\n")
+	g.Code = append(g.Code, "printf(\"%c\", (char)114);\n")
+	g.Code = append(g.Code, "printf(\"%c\", (char)114);\n")
+	g.Code = append(g.Code, "printf(\"%c\", (char)111);\n")
+	g.Code = append(g.Code, "printf(\"%c\", (char)114);\n")
+	g.Code = append(g.Code, "printf(\"%c\", (char)32);\n")
+	g.Code = append(g.Code, "printf(\"%c\", (char)100);\n")
+	g.Code = append(g.Code, "printf(\"%c\", (char)101);\n")
+	g.Code = append(g.Code, "printf(\"%c\", (char)32);\n")
+	g.Code = append(g.Code, "printf(\"%c\", (char)111);\n")
+	g.Code = append(g.Code, "printf(\"%c\", (char)112);\n")
+	g.Code = append(g.Code, "printf(\"%c\", (char)101);\n")
+	g.Code = append(g.Code, "printf(\"%c\", (char)114);\n")
+	g.Code = append(g.Code, "printf(\"%c\", (char)97);\n")
+	g.Code = append(g.Code, "printf(\"%c\", (char)99);\n")
+	g.Code = append(g.Code, "printf(\"%c\", (char)105);\n")
+	g.Code = append(g.Code, "printf(\"%c\", (char)111);\n")
+	g.Code = append(g.Code, "printf(\"%c\", (char)110);\n")
+	g.Code = append(g.Code, "printf(\"%c\", (char)10);\n")
+}

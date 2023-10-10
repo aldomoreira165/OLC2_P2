@@ -210,10 +210,10 @@ parametroscall
 //sentencias de control de flujo
 
 ifstmt  
-    : IF expr LLAVEIZQ (stmt)* LLAVEDER (elseifstmt)* (ELSE LLAVEIZQ (stmt)* LLAVEDER)?
+    : IF expr LLAVEIZQ (stmt PTCOMA?)* LLAVEDER (elseifstmt)* (ELSE LLAVEIZQ (stmt PTCOMA?)* LLAVEDER)?
     ;
 
-elseifstmt: ELSE IF expr LLAVEIZQ block LLAVEDER;
+elseifstmt: ELSE IF expr LLAVEIZQ (stmt PTCOMA?)* LLAVEDER;
 
 switchstmt: SWITCH expr LLAVEIZQ  caseStmt+ defaultCase? LLAVEDER;
 
