@@ -3,6 +3,8 @@ package lenguaje
 import (
 	"fmt"
 	"interprete/Parser"
+	"strconv"
+	"strings"
 )
 
 // visit del print
@@ -77,21 +79,111 @@ func (l *Visitor) VisitPrintstmt(ctx *parser.PrintstmtContext) interface{} {
 
 // visit del int
 func (l *Visitor) VisitIntstmt(ctx *parser.IntstmtContext) interface{} {
-	/*
-	Esta función propia del lenguaje T-Swift permite convertir una expresión ya sea de tipo
-	String o Float en una expresión de tipo Int. Si la cadena que recibe como parámetro no
-	se puede convertir a un valor numérico se debe desplegar un mensaje de error y devolver
-	un valor nil, en caso de recibir un valor de tipo Float, debe realizar un truncamiento.
-	*/
-	return nil
+	//convertir a int expresiones string, float en it 
+	var result Value
+	expresion := l.Visit(ctx.Expr()).(Value)
+
+
+	if expresion.Type == FLOAT{
+		//convertir expresion en int
+		floatVal, error := strconv.ParseFloat(expresion.Value, 64)
+		
+		if error != nil {
+			fmt.Println("[Error] expresion no se puede convertir a int")
+			result = NewValue("0", false, NIL, "")
+			return result
+		}
+
+		intVal := int(floatVal)
+		result = NewValue(strconv.Itoa(intVal), false, INTEGER, "")
+	} else if expresion.Type == STRING{
+		cadena := expresion.StringValue
+		
+		//convertir cadena a int
+		if strings.Contains(cadena, ".") {
+			//convertir cadena float a int
+			floatVal, error := strconv.ParseFloat(cadena, 64)
+
+			if error != nil {
+				fmt.Println("[Error] expresion no se puede convertir a int")
+				result = NewValue("0", false, NIL, "")
+				return result
+			}
+
+			intVal := int(floatVal)
+			result = NewValue(strconv.Itoa(intVal), false, INTEGER, "")
+		} else {
+			//convertir cadena int a int
+			intVal, error := strconv.Atoi(cadena)
+
+			if error != nil {
+				fmt.Println("[Error] expresion no se puede convertir a int")
+				result = NewValue("0", false, NIL, "")
+				return result
+			}
+
+			result = NewValue(strconv.Itoa(intVal), false, INTEGER, "")
+		}
+	} else {
+		fmt.Println("[Error] expresion no se puede convertir a int")
+	}
+	return result
 }
 
 // visit del float
 func (l *Visitor) VisitFloatstmt(ctx *parser.FloatstmtContext) interface{} {
-	return nil
+	var result Value
+	expresion := l.Visit(ctx.Expr()).(Value)
+
+	if expresion.Type == STRING {
+		//obtener valor de la cadena almacenada en el stack con el temporal
+		cadena := expresion.StringValue
+		
+		//convertir cadena a float
+		floatVal, error := strconv.ParseFloat(cadena, 64)
+		result = NewValue(strconv.FormatFloat(floatVal, 'f', -1, 64), false, FLOAT, "")
+
+		if error != nil {
+			fmt.Println("[Error] expresion no se puede convertir a float")
+			result = NewValue("0", false, NIL, "")
+			return result
+		}
+	}
+	return result
 }
 
 // visit del string
 func (l *Visitor) VisitStringstmt(ctx *parser.StringstmtContext) interface{} {
-	return nil
+	var result Value
+	expresion := l.Visit(ctx.Expr()).(Value)
+
+	if expresion.Type == INTEGER {
+		//convertir expresion en string
+
+		
+
+		result = NewValue("10", false, STRING, expresion.Value)
+		return result
+	} else if expresion.Type == FLOAT {
+		//convertir expresion en string
+		floatVal, error := strconv.ParseFloat(expresion.Value, 64)
+
+		if error != nil {
+			fmt.Println("[Error] expresion no se puede convertir a string")
+			result = NewValue("0", false, NIL, "")
+			return result
+		}
+
+		result = NewValue(strconv.FormatFloat(floatVal, 'f', -1, 64), false, STRING, "")
+	} else if expresion.Type == BOOLEAN{
+		//convertir expresion en string
+		if expresion.Value == "1" {
+			result = NewValue("true", false, STRING, "")
+		} else if expresion.Value == "0" {
+			result = NewValue("false", false, STRING, "")
+		}	
+	} else {
+		fmt.Println("[Error] expresion no se puede convertir a string")
+	}
+	return result
 }

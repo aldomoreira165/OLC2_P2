@@ -10,14 +10,16 @@ type Value struct {
 	FalseLabel []interface{}
 	OutLabel   []interface{}
 	IntValue   int
+	StringValue string
 }
 
-func NewValue(Val string, tmp bool, typ TipoExpresion) Value {
+func NewValue(Val string, tmp bool, typ TipoExpresion, strVal string) Value {
 	result := Value{
 		Value:    Val,
 		IsTemp:   tmp,
 		Type:     typ,
 		IntValue: 0,
+		StringValue: strVal,
 	}
 	return result
 }
