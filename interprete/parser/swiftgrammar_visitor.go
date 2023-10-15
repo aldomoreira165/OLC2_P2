@@ -13,6 +13,9 @@ type SwiftGrammarVisitor interface {
 	// Visit a parse tree produced by SwiftGrammarParser#block.
 	VisitBlock(ctx *BlockContext) interface{}
 
+	// Visit a parse tree produced by SwiftGrammarParser#blockFunc.
+	VisitBlockFunc(ctx *BlockFuncContext) interface{}
+
 	// Visit a parse tree produced by SwiftGrammarParser#stmt.
 	VisitStmt(ctx *StmtContext) interface{}
 

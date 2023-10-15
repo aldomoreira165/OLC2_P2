@@ -4,8 +4,12 @@ import (
 	"fmt"
 	"interprete/Parser"
 	"log"
+
 	"github.com/antlr4-go/antlr/v4"
 )
+
+var out = ""
+var cont int
 
 type Visitor struct {
 	antlr.ParseTreeVisitor
@@ -21,11 +25,10 @@ func NewVisitor() parser.SwiftGrammarVisitor {
 }
 
 func (l *Visitor) VisitS(ctx *parser.SContext) interface{} {
+	out = ""
 	l.Visit(ctx.Block())
 	l.generator.GenerateFinalCode()
-
-	var out string
-
+	
 	for _, val := range l.generator.GetFinalCode(){
 		out = out + fmt.Sprintf("%v", val)
 	}
@@ -34,10 +37,25 @@ func (l *Visitor) VisitS(ctx *parser.SContext) interface{} {
 
 // visit de block
 func (l *Visitor) VisitBlock(ctx *parser.BlockContext) interface{} {
-	for i := 0; ctx.Stmt(i) != nil; i++ {
-		l.Visit(ctx.Stmt(i))
-	}
+	l.generator.MainCode = true
+	for _, StamentsCtx := range ctx.AllStmt(){
+		result:=l.Visit(StamentsCtx).(Value)
+		for _, lvl := range result.OutLabel {
+			l.generator.AddLabel(lvl.(string))
+		}
+	}	
 	return nil
+}
+
+func (l *Visitor) VisitBlockFunc(ctx *parser.BlockFuncContext) interface{} {
+	var result Value
+	for _, StamentsCtx := range ctx.AllStmt() {
+		result:= l.Visit(StamentsCtx).(Value)
+		for _, lvl := range result.OutLabel {
+			l.generator.AddLabel(lvl.(string))
+		}
+	}
+	return result
 }
 
 // visit de las sentencias

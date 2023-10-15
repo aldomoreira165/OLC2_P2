@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
 	"interprete/Parser"
 	"interprete/lenguaje"
 	"net/http"
@@ -36,7 +37,8 @@ func manejarEnviarcodigo(w http.ResponseWriter, r *http.Request) {
 	tree := p.S()
 	visitor := lenguaje.NewVisitor()
 	out := visitor.Visit(tree)
-	
+	fmt.Println("Resultado: ", out)
+
 	//preparando respuesta
 	respuesta := Respuesta{
 		Salida:  out.(string),

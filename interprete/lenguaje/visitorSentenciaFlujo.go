@@ -8,25 +8,18 @@ import (
 func (l *Visitor) VisitIfstmt(ctx *parser.IfstmtContext) interface{} {
 	l.generator.AddComment("Inicio de if")
 	var condicion, result Value
-	condicion = l.Visit(ctx.Expr()).(Value)
 	var OutLvls []interface{}
+	condicion = l.Visit(ctx.Expr()).(Value)
 	newLabel := l.generator.NewLabel()
+
 	for _, lvl := range condicion.TrueLabel {
 		l.generator.AddLabel(lvl.(string))
 	}
 
-	if condicion.Type == BOOLEAN {
-		for i := 0; ctx.Stmt(i) != nil; i++ {
-			result = l.Visit(ctx.Stmt(i)).(Value)
-	
-			for _, lvl := range result.OutLabel {
-				OutLvls = append(OutLvls, lvl)
-			}
-		}
+	//ejecutando sentencias de condicion principal
+	result = l.Visit(ctx.BlockFunc(0)).(Value)
+	OutLvls = append(OutLvls, result.OutLabel...)
 
-		OutLvls = append(OutLvls, result.OutLabel...)
-	}
-	
 	//l.generator.AddComment("ultimas etiquetas")
 	l.generator.AddGoto(newLabel)
 	for _, lvl := range condicion.FalseLabel {
@@ -34,27 +27,50 @@ func (l *Visitor) VisitIfstmt(ctx *parser.IfstmtContext) interface{} {
 	}
 	//*****************************************add false labels
 
-	//else
-	if ctx.ELSE() != nil {
-		for i := 0; ctx.Stmt(i) != nil; i++ {
-			result = l.Visit(ctx.Stmt(i)).(Value)
-	
-			for _, lvl := range result.OutLabel {
-				OutLvls = append(OutLvls, lvl)
-			}
-		}
-
+	//else if 
+	if ctx.Elseifstmt(0) != nil {
+		//ejecutando sentencias de else if
+		result = l.Visit(ctx.Elseifstmt(0)).(Value)
 		OutLvls = append(OutLvls, result.OutLabel...)
 	}
 
-	OutLvls=append(OutLvls, newLabel)
+	//else
+	if ctx.ELSE() != nil {
+		//ejecutando sentencias de else
+		result = l.Visit(ctx.BlockFunc(1)).(Value)
+		OutLvls = append(OutLvls, result.OutLabel...)
+	}
+
+	OutLvls = append(OutLvls, newLabel)
 	result.OutLabel = OutLvls
 	return result
 }
 
-
 func (l *Visitor) VisitElseifstmt(ctx *parser.ElseifstmtContext) interface{} {
-	return nil
+	l.generator.AddComment("Inicio de else if")
+	var condicion, result Value
+	var OutLvls []interface{}
+	condicion = l.Visit(ctx.Expr()).(Value)
+	newLabel := l.generator.NewLabel()
+
+	for _, lvl := range condicion.TrueLabel {
+		l.generator.AddLabel(lvl.(string))
+	}
+
+	//ejecutando sentencias de condicion principal
+	result = l.Visit(ctx.BlockFunc()).(Value)
+	OutLvls = append(OutLvls, result.OutLabel...)
+
+	//l.generator.AddComment("ultimas etiquetas")
+	l.generator.AddGoto(newLabel)
+	for _, lvl := range condicion.FalseLabel {
+		l.generator.AddLabel(lvl.(string))
+	}
+	//*****************************************add false labels
+
+	OutLvls = append(OutLvls, newLabel)
+	result.OutLabel = OutLvls
+	return result
 }
 
 // switch
@@ -75,17 +91,17 @@ func (l *Visitor) VisitWhilestmt(ctx *parser.WhilestmtContext) interface{} {
 	return nil
 }
 
-//for
+// for
 func (l *Visitor) VisitForstmt(ctx *parser.ForstmtContext) interface{} {
 	return nil
 }
 
-//guard
+// guard
 func (l *Visitor) VisitGuardstmt(ctx *parser.GuardstmtContext) interface{} {
 	return nil
 }
 
-//rango
+// rango
 func (l *Visitor) VisitRangostmt(ctx *parser.RangostmtContext) interface{} {
 	return nil
 }

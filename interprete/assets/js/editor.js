@@ -2,6 +2,7 @@ const botonAbrirArchivo = document.getElementById("btn-abrir-archivo");
 const botonCrearArchivo = document.getElementById("btn-crear-archivo");
 const botonGuardarArchivo = document.getElementById("btn-guardar-archivo");
 const btnEjecutar = document.getElementById("btn-ejecutar");
+const btnCode = document.getElementById("btn-get-code");
 const btnTablaSimbolos = document.getElementById("btn-simbolos");
 const btnTablaErrores = document.getElementById("btn-errores");
 
@@ -77,25 +78,36 @@ btnEjecutar.addEventListener("click", function () {
     },
     body: JSON.stringify({ contenido: codigo }),
   })
-  .then((response) => {
-    if (!response.ok) {
-      return response.json(); // Leer el cuerpo de la respuesta como JSON
-    }
-    return response.json();
-  })
-  .then((data) => {
-    if (data.error) {
-      // Mostrar mensaje de error en la consola
-      console.error("Error en el servidor:", data.error);
+    .then((response) => {
+      if (!response.ok) {
+        return response.json(); // Leer el cuerpo de la respuesta como JSON
+      }
+      return response.json();
+    })
+    .then((data) => {
+      if (data.error) {
+        // Mostrar mensaje de error en la consola
+        console.error("Error en el servidor:", data.error);
 
-      // Mostrar mensaje de error en el textarea "Salida"
-      Salida.setValue(data.error);
-    } else {
-      // Mostrar resultado en la interfaz
-      Salida.setValue(data.salida);
-    }
-  })
-  .catch((error) => {
-    console.error("Error:", error);
-  });
+        // Mostrar mensaje de error en el textarea "Salida"
+        Salida.setValue(data.error);
+      } else {
+        // Mostrar resultado en la interfaz
+        Salida.setValue(data.salida);
+      }
+    })
+    .catch((error) => {
+      console.error("Error:", error);
+    });
+});
+
+btnCode.addEventListener("click", function () {
+  var codigo = Salida.getValue();
+  codigo = codigo.replace(/\n/g, "\r\n");
+  var tempTextArea = document.createElement("textarea");
+  tempTextArea.value = codigo;
+  document.body.appendChild(tempTextArea);
+  tempTextArea.select();
+  document.execCommand("copy");
+  document.body.removeChild(tempTextArea);
 });

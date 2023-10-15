@@ -27,6 +27,16 @@ public interface SwiftGrammarListener extends ParseTreeListener {
 	 */
 	void exitBlock(SwiftGrammarParser.BlockContext ctx);
 	/**
+	 * Enter a parse tree produced by {@link SwiftGrammarParser#blockFunc}.
+	 * @param ctx the parse tree
+	 */
+	void enterBlockFunc(SwiftGrammarParser.BlockFuncContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link SwiftGrammarParser#blockFunc}.
+	 * @param ctx the parse tree
+	 */
+	void exitBlockFunc(SwiftGrammarParser.BlockFuncContext ctx);
+	/**
 	 * Enter a parse tree produced by {@link SwiftGrammarParser#stmt}.
 	 * @param ctx the parse tree
 	 */

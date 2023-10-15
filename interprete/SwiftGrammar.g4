@@ -6,6 +6,9 @@ s: block EOF;
 block: (stmt PTCOMA?)*
      ;
 
+blockFunc: (stmt PTCOMA?)*
+     ;
+
 stmt: printstmt
     | typedDeclstmt
     | untypedDeclstmt
@@ -210,10 +213,10 @@ parametroscall
 //sentencias de control de flujo
 
 ifstmt  
-    : IF expr LLAVEIZQ (stmt PTCOMA?)* LLAVEDER (elseifstmt)* (ELSE LLAVEIZQ (stmt PTCOMA?)* LLAVEDER)?
+    : IF expr LLAVEIZQ blockFunc LLAVEDER (elseifstmt)* (ELSE LLAVEIZQ blockFunc LLAVEDER)?
     ;
 
-elseifstmt: ELSE IF expr LLAVEIZQ (stmt PTCOMA?)* LLAVEDER;
+elseifstmt: ELSE IF expr LLAVEIZQ blockFunc LLAVEDER;
 
 switchstmt: SWITCH expr LLAVEIZQ  caseStmt+ defaultCase? LLAVEDER;
 

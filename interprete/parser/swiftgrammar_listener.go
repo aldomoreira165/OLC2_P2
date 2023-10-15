@@ -13,6 +13,9 @@ type SwiftGrammarListener interface {
 	// EnterBlock is called when entering the block production.
 	EnterBlock(c *BlockContext)
 
+	// EnterBlockFunc is called when entering the blockFunc production.
+	EnterBlockFunc(c *BlockFuncContext)
+
 	// EnterStmt is called when entering the stmt production.
 	EnterStmt(c *StmtContext)
 
@@ -270,6 +273,9 @@ type SwiftGrammarListener interface {
 
 	// ExitBlock is called when exiting the block production.
 	ExitBlock(c *BlockContext)
+
+	// ExitBlockFunc is called when exiting the blockFunc production.
+	ExitBlockFunc(c *BlockFuncContext)
 
 	// ExitStmt is called when exiting the stmt production.
 	ExitStmt(c *StmtContext)

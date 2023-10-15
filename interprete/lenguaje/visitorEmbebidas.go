@@ -13,7 +13,8 @@ func (l *Visitor) VisitPrintstmt(ctx *parser.PrintstmtContext) interface{} {
 	var result Value
 	for _, exp := range expresiones {
 		result = exp.(Value)
-		fmt.Println("tipito: ",result.Type)
+		fmt.Println("valor print: ", result.Value)
+		fmt.Println("tipo print: ", result.Type)
 		if result.Type == INTEGER {
 			l.generator.AddPrintf("d", "(int)"+fmt.Sprintf("%v", result.Value))
 			l.generator.AddPrintf("c", "(char)10")
@@ -22,21 +23,21 @@ func (l *Visitor) VisitPrintstmt(ctx *parser.PrintstmtContext) interface{} {
 			l.generator.AddPrintf("f", "(float)"+fmt.Sprintf("%v", result.Value))
 			l.generator.AddPrintf("c", "(char)10")
 			l.generator.AddBr()
-		} else if result.Type == STRING || result.Type == CHAR{
+		} else if result.Type == STRING || result.Type == CHAR {
 			//llamar a generar printstring
 			l.generator.GeneratePrintString()
 			//agregar codigo en el main
 			newTemp1 := l.generator.NewTemp()
 			newTemp2 := l.generator.NewTemp()
-			size := "0"
-			l.generator.AddExpression(newTemp1, "P", size, "+")            //nuevo temporal en pos vacia
-			l.generator.AddExpression(newTemp1, newTemp1, "1", "+")        //se deja espacio de retorno
+			size := strconv.Itoa(l.entorno.Size["size"])
+			l.generator.AddExpression(newTemp1, "P", size, "+")     //nuevo temporal en pos vacia
+			l.generator.AddExpression(newTemp1, newTemp1, "1", "+") //se deja espacio de retorno
 			l.generator.AddSetStack("(int)"+newTemp1, result.Value) //se coloca string en parametro que se manda
-			l.generator.AddExpression("P", "P", size, "+")                 // cambio de entorno
-			l.generator.AddCall("printString")                             //Llamada
-			l.generator.AddGetStack(newTemp2, "(int)P")                    //obtencion retorno
-			l.generator.AddExpression("P", "P", size, "-")                 //regreso del entorno
-			l.generator.AddPrintf("c", "(char)10")                         //salto de linea
+			l.generator.AddExpression("P", "P", size, "+")          // cambio de entorno
+			l.generator.AddCall("printString")                      //Llamada
+			l.generator.AddGetStack(newTemp2, "(int)P")             //obtencion retorno
+			l.generator.AddExpression("P", "P", size, "-")          //regreso del entorno
+			l.generator.AddPrintf("c", "(char)10")                  //salto de linea
 			l.generator.AddBr()
 		} else if result.Type == BOOLEAN {
 			if result.IsTemp {
@@ -79,15 +80,14 @@ func (l *Visitor) VisitPrintstmt(ctx *parser.PrintstmtContext) interface{} {
 
 // visit del int
 func (l *Visitor) VisitIntstmt(ctx *parser.IntstmtContext) interface{} {
-	//convertir a int expresiones string, float en it 
+	//convertir a int expresiones string, float en it
 	var result Value
 	expresion := l.Visit(ctx.Expr()).(Value)
 
-
-	if expresion.Type == FLOAT{
+	if expresion.Type == FLOAT {
 		//convertir expresion en int
 		floatVal, error := strconv.ParseFloat(expresion.Value, 64)
-		
+
 		if error != nil {
 			fmt.Println("[Error] expresion no se puede convertir a int")
 			result = NewValue("0", false, NIL, "")
@@ -96,9 +96,9 @@ func (l *Visitor) VisitIntstmt(ctx *parser.IntstmtContext) interface{} {
 
 		intVal := int(floatVal)
 		result = NewValue(strconv.Itoa(intVal), false, INTEGER, "")
-	} else if expresion.Type == STRING{
+	} else if expresion.Type == STRING {
 		cadena := expresion.StringValue
-		
+
 		//convertir cadena a int
 		if strings.Contains(cadena, ".") {
 			//convertir cadena float a int
@@ -138,7 +138,7 @@ func (l *Visitor) VisitFloatstmt(ctx *parser.FloatstmtContext) interface{} {
 	if expresion.Type == STRING {
 		//obtener valor de la cadena almacenada en el stack con el temporal
 		cadena := expresion.StringValue
-		
+
 		//convertir cadena a float
 		floatVal, error := strconv.ParseFloat(cadena, 64)
 		result = NewValue(strconv.FormatFloat(floatVal, 'f', -1, 64), false, FLOAT, "")
@@ -155,33 +155,66 @@ func (l *Visitor) VisitFloatstmt(ctx *parser.FloatstmtContext) interface{} {
 // visit del string
 func (l *Visitor) VisitStringstmt(ctx *parser.StringstmtContext) interface{} {
 	var result Value
+	var tipo TipoExpresion
 	expresion := l.Visit(ctx.Expr()).(Value)
+	strValue := strings.Trim(expresion.Value, "\"")
 
-	if expresion.Type == INTEGER {
-		//convertir expresion en string
+	if expresion.Type == INTEGER || expresion.Type == FLOAT{
+		strLen := len(strValue)
 
-		
-
-		result = NewValue("10", false, STRING, expresion.Value)
-		return result
-	} else if expresion.Type == FLOAT {
-		//convertir expresion en string
-		floatVal, error := strconv.ParseFloat(expresion.Value, 64)
-
-		if error != nil {
-			fmt.Println("[Error] expresion no se puede convertir a string")
-			result = NewValue("0", false, NIL, "")
-			return result
+		if strLen > 1 {
+			tipo = STRING
+		} else {
+			tipo = CHAR
 		}
 
-		result = NewValue(strconv.FormatFloat(floatVal, 'f', -1, 64), false, STRING, "")
-	} else if expresion.Type == BOOLEAN{
-		//convertir expresion en string
-		if expresion.Value == "1" {
-			result = NewValue("true", false, STRING, "")
-		} else if expresion.Value == "0" {
-			result = NewValue("false", false, STRING, "")
-		}	
+		primitive := NewPrimitive(ctx.GetStart().GetLine(), ctx.GetStart().GetColumn(), strValue, tipo)
+		//nuevo temporal
+		newTemp := l.generator.NewTemp()
+		//iguala a heap pointer
+		l.generator.AddAssign(newTemp, "H")
+		//recorremos string en ascii
+		myString := primitive.Valor.(string)
+		byteArray := []byte(myString)
+		for _, asc := range byteArray {
+			//se agrega ascii al heap
+			l.generator.AddSetHeap("(int)H", strconv.Itoa(int(asc)))
+			//suma heap pointer
+			l.generator.AddExpression("H", "H", "1", "+")
+		}
+		//caracteres de escape
+		l.generator.AddSetHeap("(int)H", "-1")
+		l.generator.AddExpression("H", "H", "1", "+")
+		l.generator.AddBr()
+		result := NewValue(newTemp, true, primitive.Tipo, strValue)
+		return result
+	} else if expresion.Type == BOOLEAN {
+		if expresion.Value == "true" {
+			strValue = "true"
+		} else {
+			strValue = "false"
+		}
+		tipo = STRING
+		primitive := NewPrimitive(ctx.GetStart().GetLine(), ctx.GetStart().GetColumn(), strValue, tipo)
+		//nuevo temporal
+		newTemp := l.generator.NewTemp()
+		//iguala a heap pointer
+		l.generator.AddAssign(newTemp, "H")
+		//recorremos string en ascii
+		myString := primitive.Valor.(string)
+		byteArray := []byte(myString)
+		for _, asc := range byteArray {
+			//se agrega ascii al heap
+			l.generator.AddSetHeap("(int)H", strconv.Itoa(int(asc)))
+			//suma heap pointer
+			l.generator.AddExpression("H", "H", "1", "+")
+		}
+		//caracteres de escape
+		l.generator.AddSetHeap("(int)H", "-1")
+		l.generator.AddExpression("H", "H", "1", "+")
+		l.generator.AddBr()
+		result := NewValue(newTemp, true, primitive.Tipo, strValue)
+		return result
 	} else {
 		fmt.Println("[Error] expresion no se puede convertir a string")
 	}
