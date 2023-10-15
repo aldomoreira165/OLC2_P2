@@ -264,7 +264,7 @@ opasignstmt
 expr
     : PARIZQ expr PARDER                        # ParExpr
     | SUB expr                                  # UnariaExpr
-    | NOT expr                                  # NotExpr
+    | op=NOT left=expr                                  # OpExpr
     | left=expr op=(DIV|MOD|MUL) right=expr     # OpExpr
     | left=expr op=(ADD|SUB) right=expr         # OpExpr
     | left=expr op=(MAY_IG|MAYOR) right=expr    # OpExpr

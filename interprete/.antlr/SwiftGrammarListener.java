@@ -881,18 +881,6 @@ public interface SwiftGrammarListener extends ParseTreeListener {
 	 */
 	void exitAccesoValorStructExpr(SwiftGrammarParser.AccesoValorStructExprContext ctx);
 	/**
-	 * Enter a parse tree produced by the {@code NotExpr}
-	 * labeled alternative in {@link SwiftGrammarParser#expr}.
-	 * @param ctx the parse tree
-	 */
-	void enterNotExpr(SwiftGrammarParser.NotExprContext ctx);
-	/**
-	 * Exit a parse tree produced by the {@code NotExpr}
-	 * labeled alternative in {@link SwiftGrammarParser#expr}.
-	 * @param ctx the parse tree
-	 */
-	void exitNotExpr(SwiftGrammarParser.NotExprContext ctx);
-	/**
 	 * Enter a parse tree produced by the {@code IntExpr}
 	 * labeled alternative in {@link SwiftGrammarParser#expr}.
 	 * @param ctx the parse tree

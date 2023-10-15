@@ -244,9 +244,6 @@ type SwiftGrammarListener interface {
 	// EnterAccesoValorStructExpr is called when entering the AccesoValorStructExpr production.
 	EnterAccesoValorStructExpr(c *AccesoValorStructExprContext)
 
-	// EnterNotExpr is called when entering the NotExpr production.
-	EnterNotExpr(c *NotExprContext)
-
 	// EnterIntExpr is called when entering the IntExpr production.
 	EnterIntExpr(c *IntExprContext)
 
@@ -504,9 +501,6 @@ type SwiftGrammarListener interface {
 
 	// ExitAccesoValorStructExpr is called when exiting the AccesoValorStructExpr production.
 	ExitAccesoValorStructExpr(c *AccesoValorStructExprContext)
-
-	// ExitNotExpr is called when exiting the NotExpr production.
-	ExitNotExpr(c *NotExprContext)
 
 	// ExitIntExpr is called when exiting the IntExpr production.
 	ExitIntExpr(c *IntExprContext)

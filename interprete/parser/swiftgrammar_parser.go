@@ -13327,6 +13327,10 @@ func (s *OpExprContext) GetRuleContext() antlr.RuleContext {
 	return s
 }
 
+func (s *OpExprContext) NOT() antlr.TerminalNode {
+	return s.GetToken(SwiftGrammarParserNOT, 0)
+}
+
 func (s *OpExprContext) AllExpr() []IExprContext {
 	children := s.GetChildren()
 	len := 0
@@ -13934,66 +13938,6 @@ func (s *AccesoValorStructExprContext) Accept(visitor antlr.ParseTreeVisitor) in
 	}
 }
 
-type NotExprContext struct {
-	ExprContext
-}
-
-func NewNotExprContext(parser antlr.Parser, ctx antlr.ParserRuleContext) *NotExprContext {
-	var p = new(NotExprContext)
-
-	InitEmptyExprContext(&p.ExprContext)
-	p.parser = parser
-	p.CopyAll(ctx.(*ExprContext))
-
-	return p
-}
-
-func (s *NotExprContext) GetRuleContext() antlr.RuleContext {
-	return s
-}
-
-func (s *NotExprContext) NOT() antlr.TerminalNode {
-	return s.GetToken(SwiftGrammarParserNOT, 0)
-}
-
-func (s *NotExprContext) Expr() IExprContext {
-	var t antlr.RuleContext
-	for _, ctx := range s.GetChildren() {
-		if _, ok := ctx.(IExprContext); ok {
-			t = ctx.(antlr.RuleContext)
-			break
-		}
-	}
-
-	if t == nil {
-		return nil
-	}
-
-	return t.(IExprContext)
-}
-
-func (s *NotExprContext) EnterRule(listener antlr.ParseTreeListener) {
-	if listenerT, ok := listener.(SwiftGrammarListener); ok {
-		listenerT.EnterNotExpr(s)
-	}
-}
-
-func (s *NotExprContext) ExitRule(listener antlr.ParseTreeListener) {
-	if listenerT, ok := listener.(SwiftGrammarListener); ok {
-		listenerT.ExitNotExpr(s)
-	}
-}
-
-func (s *NotExprContext) Accept(visitor antlr.ParseTreeVisitor) interface{} {
-	switch t := visitor.(type) {
-	case SwiftGrammarVisitor:
-		return t.VisitNotExpr(s)
-
-	default:
-		return t.VisitChildren(s)
-	}
-}
-
 type IntExprContext struct {
 	ExprContext
 }
@@ -14231,12 +14175,15 @@ func (p *SwiftGrammarParser) expr(_p int) (localctx IExprContext) {
 		}
 
 	case 3:
-		localctx = NewNotExprContext(p, localctx)
+		localctx = NewOpExprContext(p, localctx)
 		p.SetParserRuleContext(localctx)
 		_prevctx = localctx
 		{
 			p.SetState(669)
-			p.Match(SwiftGrammarParserNOT)
+
+			var _m = p.Match(SwiftGrammarParserNOT)
+
+			localctx.(*OpExprContext).op = _m
 			if p.HasError() {
 				// Recognition error - abort rule
 				goto errorExit
@@ -14244,7 +14191,10 @@ func (p *SwiftGrammarParser) expr(_p int) (localctx IExprContext) {
 		}
 		{
 			p.SetState(670)
-			p.expr(24)
+
+			var _x = p.expr(24)
+
+			localctx.(*OpExprContext).left = _x
 		}
 
 	case 4:

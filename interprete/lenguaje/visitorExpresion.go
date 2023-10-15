@@ -342,7 +342,7 @@ func (l *Visitor) VisitOpExpr(ctx *parser.OpExprContext) interface{} {
 
 			result = NewValue("", false, BOOLEAN, "")
 			result.TrueLabel = append(op_der.TrueLabel, result.TrueLabel...)
-			result.TrueLabel = append(op_izq.FalseLabel, result.FalseLabel...)
+			result.FalseLabel = append(op_izq.FalseLabel, result.FalseLabel...)
 			result.FalseLabel = append(op_der.FalseLabel, result.FalseLabel...)
 			return result
 
@@ -360,9 +360,29 @@ func (l *Visitor) VisitOpExpr(ctx *parser.OpExprContext) interface{} {
 
 			result = NewValue("", false, BOOLEAN, "")
 			result.TrueLabel = append(op_izq.TrueLabel, result.TrueLabel...)
-			result.FalseLabel = append(op_der.FalseLabel, result.FalseLabel...)
+			result.TrueLabel = append(op_der.TrueLabel, result.TrueLabel...)
 			result.FalseLabel = append(op_der.FalseLabel, result.FalseLabel...)
 			return result
+		}
+	case "!":
+		{
+			op_izq := l.Visit(ctx.GetLeft()).(Value)
+			var value string
+
+			if op_izq.Value == "1" {
+				value = "0"
+			} else {
+				value = "1"
+			}
+
+			if op_izq.Type == BOOLEAN {
+				result = NewValue(value, false, BOOLEAN, "")
+				result.TrueLabel = append(op_izq.FalseLabel, result.FalseLabel...)
+				result.FalseLabel = append(op_izq.TrueLabel, result.FalseLabel...)
+				return result
+			} else {
+				fmt.Println("ERROR: tipo no compatible !")
+			}
 		}
 	}
 	return result
@@ -497,20 +517,6 @@ func (l *Visitor) VisitUnariaExpr(ctx *parser.UnariaExprContext) interface{} {
 	return nil
 }
 
-// not expr
-func (l *Visitor) VisitNotExpr(ctx *parser.NotExprContext) interface{} {
-	//Invierte el valor de cualquier expresión Booleana
-	fmt.Println("entramos a not")
-	expr := l.Visit(ctx.Expr()).(Value)
-	var result Value
-	if expr.Type == BOOLEAN {
-		result = NewValue("", false, BOOLEAN, "")
-		result.TrueLabel = append(expr.FalseLabel, result.TrueLabel)
-		result.FalseLabel = append(expr.TrueLabel, result.FalseLabel)
-		return result
-	}
-	return result
-}
 
 func (l *Visitor) VisitNilExpr(ctx *parser.NilExprContext) interface{} {
 	fmt.Println("entramos a nil")

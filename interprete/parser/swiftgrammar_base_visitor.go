@@ -323,10 +323,6 @@ func (v *BaseSwiftGrammarVisitor) VisitAccesoValorStructExpr(ctx *AccesoValorStr
 	return v.VisitChildren(ctx)
 }
 
-func (v *BaseSwiftGrammarVisitor) VisitNotExpr(ctx *NotExprContext) interface{} {
-	return v.VisitChildren(ctx)
-}
-
 func (v *BaseSwiftGrammarVisitor) VisitIntExpr(ctx *IntExprContext) interface{} {
 	return v.VisitChildren(ctx)
 }
