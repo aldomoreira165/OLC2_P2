@@ -23,7 +23,7 @@ func (l *Visitor) VisitAsignstmt(ctx *parser.AsignstmtContext) interface{} {
 			columna := ctx.GetStart().GetColumn()
 			tipo := result.Type
 			posicion := variable.Posicion
-			value := Symbol{Lin: linea, Col: columna, Tipo: tipo, Posicion: posicion, Value: result.Value}
+			value := Symbol{Lin: linea, Col: columna, Tipo: tipo, Posicion: posicion, Value: result.StringValue}
 			l.entorno.SetVariable(idVar, value)
 			fmt.Println("Asignacion de variable exitosa")
 			fmt.Println(l.entorno.Tabla)
@@ -36,7 +36,7 @@ func (l *Visitor) VisitAsignstmt(ctx *parser.AsignstmtContext) interface{} {
 			columna := ctx.GetStart().GetColumn()
 			tipo := result.Type
 			posicion := variable.Posicion
-			value := Symbol{Lin: linea, Col: columna, Tipo: tipo, Posicion: posicion, Value: result.Value}
+			value := Symbol{Lin: linea, Col: columna, Tipo: tipo, Posicion: posicion, Value: result.StringValue}
 			l.entorno.SetVariable(idVar, value)
 			fmt.Println("Asignacion de variable exitosa")
 		} else {

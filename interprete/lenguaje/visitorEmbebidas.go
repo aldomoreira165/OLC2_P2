@@ -103,7 +103,7 @@ func (l *Visitor) VisitIntstmt(ctx *parser.IntstmtContext) interface{} {
 		}
 
 		intVal := int(floatVal)
-		result = NewValue(strconv.Itoa(intVal), false, INTEGER, "")
+		result = NewValue(strconv.Itoa(intVal), false, INTEGER, expresion.StringValue)
 	} else if expresion.Type == STRING {
 		cadena := expresion.StringValue
 
@@ -119,18 +119,18 @@ func (l *Visitor) VisitIntstmt(ctx *parser.IntstmtContext) interface{} {
 			}
 
 			intVal := int(floatVal)
-			result = NewValue(strconv.Itoa(intVal), false, INTEGER, "")
+			result = NewValue(strconv.Itoa(intVal), false, INTEGER, expresion.StringValue)
 		} else {
 			//convertir cadena int a int
 			intVal, error := strconv.Atoi(cadena)
 
 			if error != nil {
 				fmt.Println("[Error] expresion no se puede convertir a int")
-				result = NewValue("0", false, NIL, "")
+				result = NewValue("0", false, NIL, "nil")
 				return result
 			}
 
-			result = NewValue(strconv.Itoa(intVal), false, INTEGER, "")
+			result = NewValue(strconv.Itoa(intVal), false, INTEGER, expresion.StringValue)
 		}
 	} else {
 		fmt.Println("[Error] expresion no se puede convertir a int")
@@ -149,11 +149,11 @@ func (l *Visitor) VisitFloatstmt(ctx *parser.FloatstmtContext) interface{} {
 
 		//convertir cadena a float
 		floatVal, error := strconv.ParseFloat(cadena, 64)
-		result = NewValue(strconv.FormatFloat(floatVal, 'f', -1, 64), false, FLOAT, "")
+		result = NewValue(strconv.FormatFloat(floatVal, 'f', -1, 64), false, FLOAT, expresion.StringValue)
 
 		if error != nil {
 			fmt.Println("[Error] expresion no se puede convertir a float")
-			result = NewValue("0", false, NIL, "")
+			result = NewValue("0", false, NIL, "nil")
 			return result
 		}
 	}

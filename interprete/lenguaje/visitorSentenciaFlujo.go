@@ -88,7 +88,28 @@ func (l *Visitor) VisitDefaultCase(ctx *parser.DefaultCaseContext) interface{} {
 
 // visit del while (arreglar) break no jala todavia
 func (l *Visitor) VisitWhilestmt(ctx *parser.WhilestmtContext) interface{} {
-	return nil
+	l.generator.AddComment("Inicio de while")
+	var condicion, result Value
+	RetLvl := l.generator.NewLabel()
+	l.generator.AddLabel(RetLvl)
+	condicion = l.Visit(ctx.Expr()).(Value)
+	//******************** add break & continue lvls
+
+	l.generator.AddContinue(RetLvl)
+	l.generator.AddBreak(condicion.FalseLabel[0].(string))
+	//add true labels
+	for _, lvl := range condicion.TrueLabel {
+		l.generator.AddLabel(lvl.(string))
+	}
+	//instrucciones de while
+	result = l.Visit(ctx.BlockFunc()).(Value)
+	//add goto
+	l.generator.AddGoto(RetLvl)
+	//add false labels
+	for _, lvl := range condicion.FalseLabel {
+		l.generator.AddLabel(lvl.(string))
+	}
+	return result
 }
 
 // for

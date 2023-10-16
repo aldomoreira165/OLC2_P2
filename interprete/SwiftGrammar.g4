@@ -241,7 +241,7 @@ asignstmt
     ;
 
 whilestmt
-    : WHILE expr LLAVEIZQ block LLAVEDER
+    : WHILE expr LLAVEIZQ blockFunc LLAVEDER
     ;
 
 forstmt
