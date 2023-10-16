@@ -10,18 +10,25 @@ import (
 // visit del print
 func (l *Visitor) VisitPrintstmt(ctx *parser.PrintstmtContext) interface{} {
 	expresiones := l.Visit(ctx.Listaexpresiones()).([]interface{})
+	contador := 1
+	var charSalida string
 	var result Value
 	for _, exp := range expresiones {
 		result = exp.(Value)
-		fmt.Println("valor print: ", result.Value)
-		fmt.Println("tipo print: ", result.Type)
+		
+		if contador == len(expresiones) {
+			charSalida = "10"
+		} else {
+			charSalida = "32"
+		}
+
 		if result.Type == INTEGER {
 			l.generator.AddPrintf("d", "(int)"+fmt.Sprintf("%v", result.Value))
-			l.generator.AddPrintf("c", "(char)10")
+			l.generator.AddPrintf("c", "(char)"+charSalida)
 			l.generator.AddBr()
 		} else if result.Type == FLOAT {
 			l.generator.AddPrintf("f", "(float)"+fmt.Sprintf("%v", result.Value))
-			l.generator.AddPrintf("c", "(char)10")
+			l.generator.AddPrintf("c", "(char)"+charSalida)
 			l.generator.AddBr()
 		} else if result.Type == STRING || result.Type == CHAR {
 			//llamar a generar printstring
@@ -37,7 +44,7 @@ func (l *Visitor) VisitPrintstmt(ctx *parser.PrintstmtContext) interface{} {
 			l.generator.AddCall("printString")                      //Llamada
 			l.generator.AddGetStack(newTemp2, "(int)P")             //obtencion retorno
 			l.generator.AddExpression("P", "P", size, "-")          //regreso del entorno
-			l.generator.AddPrintf("c", "(char)10")                  //salto de linea
+			l.generator.AddPrintf("c","(char)"+charSalida)                  //salto de linea
 			l.generator.AddBr()
 		} else if result.Type == BOOLEAN {
 			if result.IsTemp {
@@ -63,17 +70,18 @@ func (l *Visitor) VisitPrintstmt(ctx *parser.PrintstmtContext) interface{} {
 			l.generator.AddPrintf("c", "(char)115")
 			l.generator.AddPrintf("c", "(char)101")
 			l.generator.AddLabel(newLabel)
-			l.generator.AddPrintf("c", "(char)10")
+			l.generator.AddPrintf("c", "(char)"+charSalida)
 			l.generator.AddBr()
 		} else if result.Type == NIL {
 			l.generator.AddPrintf("c", "(char)110")
 			l.generator.AddPrintf("c", "(char)105")
 			l.generator.AddPrintf("c", "(char)108")
-			l.generator.AddPrintf("c", "(char)10")
+			l.generator.AddPrintf("c", "(char)"+charSalida)
 			l.generator.AddBr()
 		} else {
 			fmt.Println("Error en print")
 		}
+		contador++
 	}
 	return result
 }
@@ -168,7 +176,8 @@ func (l *Visitor) VisitStringstmt(ctx *parser.StringstmtContext) interface{} {
 			tipo = CHAR
 		}
 
-		primitive := NewPrimitive(ctx.GetStart().GetLine(), ctx.GetStart().GetColumn(), strValue, tipo)
+		fmt.Println("String Value: ", strValue)
+		primitive := NewPrimitive(ctx.GetStart().GetLine(), ctx.GetStart().GetColumn(), expresion.StringValue, tipo)
 		//nuevo temporal
 		newTemp := l.generator.NewTemp()
 		//iguala a heap pointer
@@ -189,9 +198,12 @@ func (l *Visitor) VisitStringstmt(ctx *parser.StringstmtContext) interface{} {
 		result := NewValue(newTemp, true, primitive.Tipo, strValue)
 		return result
 	} else if expresion.Type == BOOLEAN {
-		if expresion.Value == "true" {
+		l.generator.RemoveLastGoto()
+		fmt.Println("expresion Value: ", expresion.Value)
+
+		if expresion.Value == "1" {
 			strValue = "true"
-		} else {
+		} else if expresion.Value == "0" {
 			strValue = "false"
 		}
 		tipo = STRING
@@ -202,6 +214,7 @@ func (l *Visitor) VisitStringstmt(ctx *parser.StringstmtContext) interface{} {
 		l.generator.AddAssign(newTemp, "H")
 		//recorremos string en ascii
 		myString := primitive.Valor.(string)
+		fmt.Println("myString: ", myString)
 		byteArray := []byte(myString)
 		for _, asc := range byteArray {
 			//se agrega ascii al heap

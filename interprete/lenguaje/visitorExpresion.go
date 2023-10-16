@@ -65,13 +65,25 @@ func (l *Visitor) VisitOpExpr(ctx *parser.OpExprContext) interface{} {
 		{
 			op_izq := l.Visit(ctx.GetLeft()).(Value)
 			op_der := l.Visit(ctx.GetRight()).(Value)
+
 			dominante = suma_resta_dominante[op_izq.Type][op_der.Type]
 			fmt.Println("dominante: ", dominante)
-			if dominante == INTEGER || dominante == FLOAT {
+			if dominante == INTEGER {
+				num1, _ := strconv.Atoi(op_izq.StringValue)
+    			num2, _ := strconv.Atoi(op_der.StringValue)
+				strVal := strconv.Itoa(num1 + num2)
 				l.generator.AddExpression(newTemp, op_izq.Value, op_der.Value, "+")
-				result = NewValue(newTemp, true, dominante, "")
+				result = NewValue(newTemp, true, dominante, strVal)
+				return result
+			}else if dominante == FLOAT {
+				num1, _ := strconv.ParseFloat(op_izq.StringValue, 64)
+				num2, _ := strconv.ParseFloat(op_der.StringValue, 64)
+				strVal := strconv.FormatFloat(num1 + num2, 'f', -1, 64)
+				l.generator.AddExpression(newTemp, op_izq.Value, op_der.Value, "+")
+				result = NewValue(newTemp, true, dominante, strVal)
 				return result
 			} else if dominante == STRING {
+				strVal := op_izq.StringValue + op_der.StringValue
 				l.generator.GenerateConcatString()
 				envSize := strconv.Itoa(l.entorno.Size["size"])
 				tmp1 := l.generator.NewTemp()
@@ -86,12 +98,12 @@ func (l *Visitor) VisitOpExpr(ctx *parser.OpExprContext) interface{} {
 				l.generator.AddGetStack(tmp2, "(int)P")
 				l.generator.AddExpression("P", "P", envSize, "-")
 				l.generator.AddBr()
-				result := NewValue(tmp2, true, STRING, "")
+				result := NewValue(tmp2, true, STRING, strVal)
 				return result
 			} else if dominante == NIL {
 				fmt.Println("Error: operacion no valida")
 				l.generator.AddErrorOperacion()
-				result = NewValue("", false, NIL, "")
+				result = NewValue("", false, NIL, "nil")
 				return result
 			}
 		}
@@ -99,15 +111,26 @@ func (l *Visitor) VisitOpExpr(ctx *parser.OpExprContext) interface{} {
 		{
 			op_izq := l.Visit(ctx.GetLeft()).(Value)
 			op_der := l.Visit(ctx.GetRight()).(Value)
+
 			dominante = suma_resta_dominante[op_izq.Type][op_der.Type]
-			if dominante == INTEGER || dominante == FLOAT {
+			if dominante == INTEGER {
+				num1, _ := strconv.Atoi(op_izq.StringValue)
+    			num2, _ := strconv.Atoi(op_der.StringValue)
+				strVal := strconv.Itoa(num1 - num2)
 				l.generator.AddExpression(newTemp, op_izq.Value, op_der.Value, "-")
-				result = NewValue(newTemp, true, dominante, "")
+				result = NewValue(newTemp, true, dominante, strVal)
+				return result
+			} else if dominante == FLOAT {
+				num1, _ := strconv.ParseFloat(op_izq.StringValue, 64)
+				num2, _ := strconv.ParseFloat(op_der.StringValue, 64)
+				strVal := strconv.FormatFloat(num1 - num2, 'f', -1, 64)
+				l.generator.AddExpression(newTemp, op_izq.Value, op_der.Value, "-")
+				result = NewValue(newTemp, true, dominante, strVal)
 				return result
 			} else if dominante == NIL {
 				fmt.Println("Error: operacion no valida")
 				l.generator.AddErrorOperacion()
-				result = NewValue("", false, NIL, "")
+				result = NewValue("", false, NIL, "nil")
 				return result
 			}
 		}
@@ -115,10 +138,14 @@ func (l *Visitor) VisitOpExpr(ctx *parser.OpExprContext) interface{} {
 		{
 			op_izq := l.Visit(ctx.GetLeft()).(Value)
 			op_der := l.Visit(ctx.GetRight()).(Value)
+			num1, _ := strconv.Atoi(op_izq.Value)
+    		num2, _ := strconv.Atoi(op_der.Value)
+			strVal := strconv.Itoa(num1 * num2)
+
 			dominante = multi_division_dominante[op_izq.Type][op_der.Type]
 			if dominante == INTEGER || dominante == FLOAT {
 				l.generator.AddExpression(newTemp, op_izq.Value, op_der.Value, "*")
-				result = NewValue(newTemp, true, dominante, "")
+				result = NewValue(newTemp, true, dominante, strVal)
 				return result
 			} else if dominante == NIL {
 				fmt.Println("Error: operacion no valida")
@@ -131,6 +158,10 @@ func (l *Visitor) VisitOpExpr(ctx *parser.OpExprContext) interface{} {
 		{
 			op_izq := l.Visit(ctx.GetLeft()).(Value)
 			op_der := l.Visit(ctx.GetRight()).(Value)
+			num1, _ := strconv.Atoi(op_izq.Value)
+    		num2, _ := strconv.Atoi(op_der.Value)
+			strVal := strconv.Itoa(num1 / num2)
+
 			dominante = multi_division_dominante[op_izq.Type][op_der.Type]
 			fmt.Println("dominante: ", dominante)
 			if dominante == INTEGER || dominante == FLOAT {
@@ -153,7 +184,7 @@ func (l *Visitor) VisitOpExpr(ctx *parser.OpExprContext) interface{} {
 				l.generator.AddLabel(lvl1)
 				l.generator.AddExpression(newTemp, op_izq.Value, op_der.Value, "/")
 				l.generator.AddLabel(lvl2)
-				result = NewValue(newTemp, true, dominante, "")
+				result = NewValue(newTemp, true, dominante, strVal)
 				return result
 			} else if dominante == NIL {
 				fmt.Println("Error: operacion no valida")
@@ -166,6 +197,10 @@ func (l *Visitor) VisitOpExpr(ctx *parser.OpExprContext) interface{} {
 		{
 			op_izq := l.Visit(ctx.GetLeft()).(Value)
 			op_der := l.Visit(ctx.GetRight()).(Value)
+			num1, _ := strconv.Atoi(op_izq.Value)
+    		num2, _ := strconv.Atoi(op_der.Value)
+			strVal := strconv.Itoa(num1 % num2)
+
 			dominante = multi_division_dominante[op_izq.Type][op_der.Type]
 			if dominante == INTEGER {
 				lvl1 := l.generator.NewLabel()
@@ -187,7 +222,7 @@ func (l *Visitor) VisitOpExpr(ctx *parser.OpExprContext) interface{} {
 				l.generator.AddLabel(lvl1)
 				l.generator.AddExpression(newTemp, op_izq.Value, op_der.Value, "%")
 				l.generator.AddLabel(lvl2)
-				result = NewValue(newTemp, true, dominante, "")
+				result = NewValue(newTemp, true, dominante, strVal)
 				return result
 			} else if dominante == NIL {
 				fmt.Println("Error: operacion no valida")
@@ -368,15 +403,18 @@ func (l *Visitor) VisitOpExpr(ctx *parser.OpExprContext) interface{} {
 		{
 			op_izq := l.Visit(ctx.GetLeft()).(Value)
 			var value string
+			var valueString string
 
 			if op_izq.Value == "1" {
 				value = "0"
+				valueString = "false"
 			} else {
 				value = "1"
+				valueString = "true"
 			}
 
 			if op_izq.Type == BOOLEAN {
-				result = NewValue(value, false, BOOLEAN, "")
+				result = NewValue(value, false, BOOLEAN, valueString)
 				result.TrueLabel = append(op_izq.FalseLabel, result.FalseLabel...)
 				result.FalseLabel = append(op_izq.TrueLabel, result.FalseLabel...)
 				return result
@@ -400,7 +438,7 @@ func (l *Visitor) VisitNumExpr(ctx *parser.NumExprContext) interface{} {
 			fmt.Println("Error al convertir el numero: ", err)
 		}
 		primitive := NewPrimitive(ctx.GetStart().GetLine(), ctx.GetStart().GetColumn(), num, FLOAT)
-		result := NewValue(fmt.Sprintf("%.1f", primitive.Valor), false, primitive.Tipo, "")
+		result := NewValue(fmt.Sprintf("%.4f", primitive.Valor), false, primitive.Tipo, numStr)
 		return result
 	} else {
 		num, err := strconv.Atoi(numStr)
@@ -408,7 +446,7 @@ func (l *Visitor) VisitNumExpr(ctx *parser.NumExprContext) interface{} {
 			fmt.Println("Error al convertir el numero: ", err)
 		}
 		primitive := NewPrimitive(ctx.GetStart().GetLine(), ctx.GetStart().GetColumn(), num, INTEGER)
-		result := NewValue(fmt.Sprintf("%v", primitive.Valor), false, primitive.Tipo, "")
+		result := NewValue(fmt.Sprintf("%v", primitive.Valor), false, primitive.Tipo, numStr)
 		return result
 	}
 }
@@ -437,7 +475,7 @@ func (l *Visitor) VisitIdExpr(ctx *parser.IdExprContext) interface{} {
 		result.TrueLabel = append(result.TrueLabel, trueLabel)
 		result.FalseLabel = append(result.FalseLabel, falseLabel)
 	} else {
-		result = NewValue(newTemp2, true, retSym.Tipo, "")
+		result = NewValue(newTemp2, true, retSym.Tipo, retSym.Value)
 		//result.ArrType = retSym.TipoArr
 	}
 
@@ -483,6 +521,7 @@ func (l *Visitor) VisitStrExpr(ctx *parser.StrExprContext) interface{} {
 func (l *Visitor) VisitBoolExpr(ctx *parser.BoolExprContext) interface{} {
 	boolVal := ctx.GetText()
 	var valRet string
+	var valueString string
 	var result Value
 	l.generator.AddComment("Primitivo bool")
 	trueLabel := l.generator.NewLabel()
@@ -490,11 +529,13 @@ func (l *Visitor) VisitBoolExpr(ctx *parser.BoolExprContext) interface{} {
 	if boolVal == "true" {
 		l.generator.AddGoto(trueLabel)
 		valRet = "1"
+		valueString = "true"
 	} else {
 		l.generator.AddGoto(falseLabel)
 		valRet = "0"
+		valueString = "false"
 	}
-	result = NewValue(valRet, false, BOOLEAN, "")
+	result = NewValue(valRet, false, BOOLEAN, valueString)
 	result.TrueLabel = append(result.TrueLabel, trueLabel)
 	result.FalseLabel = append(result.FalseLabel, falseLabel)
 	return result
@@ -506,12 +547,12 @@ func (l *Visitor) VisitUnariaExpr(ctx *parser.UnariaExprContext) interface{} {
 	if expr.Type == FLOAT {
 		expresion, _ := strconv.ParseFloat(expr.Value, 64)
 		newValue := expresion * -1
-		result := NewValue(fmt.Sprintf("%.1f", newValue), false, FLOAT, "")
+		result := NewValue(fmt.Sprintf("%.1f", newValue), false, FLOAT, strconv.FormatFloat(newValue, 'f', 4, 64))
 		return result
 	} else if expr.Type == INTEGER {
 		expresion, _ := strconv.Atoi(expr.Value)
 		newValue := expresion * -1
-		result := NewValue(fmt.Sprintf("%v", newValue), false, INTEGER, "")
+		result := NewValue(fmt.Sprintf("%v", newValue), false, INTEGER, strconv.Itoa(newValue))
 		return result
 	}
 	return nil
@@ -520,7 +561,7 @@ func (l *Visitor) VisitUnariaExpr(ctx *parser.UnariaExprContext) interface{} {
 
 func (l *Visitor) VisitNilExpr(ctx *parser.NilExprContext) interface{} {
 	fmt.Println("entramos a nil")
-	valor := NewValue("0", false, NIL, "")
+	valor := NewValue("0", false, NIL, "nil")
 	return valor
 }
 

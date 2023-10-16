@@ -10,6 +10,7 @@ type Symbol struct {
 	Tipo     TipoExpresion
 	TipoArr  TipoExpresion
 	Posicion int
+	Value string
 }
 
 func getDataSymbol(s Symbol) {
@@ -21,5 +22,6 @@ func getDataSymbol(s Symbol) {
 	fmt.Println("Tipo: ", s.Tipo)
 	fmt.Println("TipoArr: ", s.TipoArr)
 	fmt.Println("Posicion: ", s.Posicion)
+	fmt.Println("Value: ", s.Value)
 	fmt.Println("--------------")
 }

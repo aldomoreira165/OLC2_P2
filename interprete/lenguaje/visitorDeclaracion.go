@@ -24,7 +24,7 @@ func (l *Visitor) VisitTypedDeclstmt(ctx *parser.TypedDeclstmtContext) interface
 
 	if typeVar == typeString {
 		l.generator.AddComment("Declaracion de variable con tipo")
-		newVar = l.entorno.SaveVariable(idVar, result.Type, constVar, ctx.GetStart().GetLine(), ctx.GetStart().GetColumn())
+		newVar = l.entorno.SaveVariable(idVar, result.Type, constVar, ctx.GetStart().GetLine(), ctx.GetStart().GetColumn(), result.Value)
 
 		if newVar.Col == 0 && newVar.Lin == 0 && newVar.Tipo == NIL && newVar.Posicion == 0 {
 			l.generator.AddErrorDeclaracion()
@@ -54,7 +54,7 @@ func (l *Visitor) VisitTypedDeclstmt(ctx *parser.TypedDeclstmtContext) interface
 	} else if typeVar == "float" && result.Type == INTEGER {
 		//convertir a float
 		l.generator.AddComment("Declaracion de variable con tipo")
-		newVar = l.entorno.SaveVariable(idVar, FLOAT, constVar, ctx.GetStart().GetLine(), ctx.GetStart().GetColumn())
+		newVar = l.entorno.SaveVariable(idVar, FLOAT, constVar, ctx.GetStart().GetLine(), ctx.GetStart().GetColumn(), result.Value)
 		if newVar.Col == 0 && newVar.Lin == 0 && newVar.Tipo == NIL && newVar.Posicion == 0 {
 			l.generator.AddErrorDeclaracion()
 		} else {
@@ -83,7 +83,7 @@ func (l *Visitor) VisitOptionalTypedDeclstmt(ctx *parser.OptionalTypedDeclstmtCo
 		fmt.Println("let")
 		l.generator.AddErrorDeclaracion()
 	} else {
-		newVar = l.entorno.SaveVariable(idVar, tipo, false, ctx.GetStart().GetLine(), ctx.GetStart().GetColumn())
+		newVar = l.entorno.SaveVariable(idVar, tipo, false, ctx.GetStart().GetLine(), ctx.GetStart().GetColumn(), result.Value)
 
 		if newVar.Col == 0 && newVar.Lin == 0 && newVar.Tipo == NIL && newVar.Posicion == 0 {
 			l.generator.AddErrorDeclaracion()
@@ -110,7 +110,7 @@ func (l *Visitor) VisitUntypedDeclstmt(ctx *parser.UntypedDeclstmtContext) inter
 		constVar = false
 	}
 
-	newVar = l.entorno.SaveVariable(idVar, result.Type, constVar, ctx.GetStart().GetLine(), ctx.GetStart().GetColumn())
+	newVar = l.entorno.SaveVariable(idVar, result.Type, constVar, ctx.GetStart().GetLine(), ctx.GetStart().GetColumn(), result.Value)
 
 	if newVar.Col == 0 && newVar.Lin == 0 && newVar.Tipo == NIL && newVar.Posicion == 0 {
 		l.generator.AddErrorDeclaracion()
