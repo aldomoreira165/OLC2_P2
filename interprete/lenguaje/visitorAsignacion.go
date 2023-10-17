@@ -44,7 +44,7 @@ func (l *Visitor) VisitAsignstmt(ctx *parser.AsignstmtContext) interface{} {
 			fmt.Println("error en los tipos en la asignacion")
 			l.generator.AddErrorAsignacion()
 		}
-	}else{
+	} else {
 		fmt.Println("La variable es constante")
 		l.generator.AddErrorAsignacion()
 	}
@@ -54,9 +54,103 @@ func (l *Visitor) VisitAsignstmt(ctx *parser.AsignstmtContext) interface{} {
 //operadores de asignacion += -=
 
 func (l *Visitor) VisitIncremento(ctx *parser.IncrementoContext) interface{} {
-	return nil
+	var result Value
+	idVar := ctx.Expr(0).GetText()
+	variable := l.entorno.GetVariable(idVar)
+
+	if !variable.Constante {
+		sumando := l.Visit(ctx.Expr(1)).(Value)
+		if sumando.Type == variable.Tipo{
+			l.generator.AddComment("Incremento de variable")
+			newTemp := l.generator.NewTemp()
+			valorVariable := l.Visit(ctx.Expr(0)).(Value)
+			strVal := strconv.Itoa(sumando.IntValue + valorVariable.IntValue)
+			l.generator.AddExpression(newTemp, valorVariable.Value, sumando.Value, "+")
+			result = NewValue(newTemp, true, sumando.Type, strVal, false, false, false)
+			l.generator.AddSetStack(strconv.Itoa(variable.Posicion), result.Value)
+			l.generator.AddBr()
+			linea := ctx.GetStart().GetLine()
+			columna := ctx.GetStart().GetColumn()
+			tipo := result.Type
+			posicion := variable.Posicion
+			value := Symbol{Lin: linea, Col: columna, Tipo: tipo, Posicion: posicion, Value: result.StringValue}
+			l.entorno.SetVariable(idVar, value)
+			fmt.Println("Incremento de variable exitosa")
+		}else if sumando.Type == 0 && variable.Tipo == 1 {
+			l.generator.AddComment("Incremento de variable")
+			newTemp := l.generator.NewTemp()
+			valorVariable := l.Visit(ctx.Expr(0)).(Value)
+			strVal := strconv.Itoa(sumando.IntValue + valorVariable.IntValue)
+			l.generator.AddExpression(newTemp, valorVariable.Value, sumando.Value, "+")
+			result = NewValue(newTemp, true, FLOAT, strVal, false, false, false)
+			l.generator.AddSetStack(strconv.Itoa(variable.Posicion), result.Value)
+			l.generator.AddBr()
+			linea := ctx.GetStart().GetLine()
+			columna := ctx.GetStart().GetColumn()
+			tipo := result.Type
+			posicion := variable.Posicion
+			value := Symbol{Lin: linea, Col: columna, Tipo: tipo, Posicion: posicion, Value: result.StringValue}
+			l.entorno.SetVariable(idVar, value)
+			fmt.Println("Incremento de variable exitosa")
+		} else {
+			//retornar error de tipos y retornar nil
+			fmt.Println("error en los tipos en el incremento")
+			l.generator.AddErrorAsignacion()
+		}
+	}else{
+		fmt.Println("La variable es constante")
+		l.generator.AddErrorAsignacion()
+	}
+	return result
 }
 
 func (l *Visitor) VisitDecremento(ctx *parser.DecrementoContext) interface{} {
-	return nil
+	var result Value
+	idVar := ctx.Expr(0).GetText()
+	variable := l.entorno.GetVariable(idVar)
+
+	if !variable.Constante {
+		sumando := l.Visit(ctx.Expr(1)).(Value)
+		if sumando.Type == variable.Tipo{
+			l.generator.AddComment("Decremento de variable")
+			newTemp := l.generator.NewTemp()
+			valorVariable := l.Visit(ctx.Expr(0)).(Value)
+			strVal := strconv.Itoa(sumando.IntValue - valorVariable.IntValue)
+			l.generator.AddExpression(newTemp, valorVariable.Value, sumando.Value, "-")
+			result = NewValue(newTemp, true, sumando.Type, strVal, false, false, false)
+			l.generator.AddSetStack(strconv.Itoa(variable.Posicion), result.Value)
+			l.generator.AddBr()
+			linea := ctx.GetStart().GetLine()
+			columna := ctx.GetStart().GetColumn()
+			tipo := result.Type
+			posicion := variable.Posicion
+			value := Symbol{Lin: linea, Col: columna, Tipo: tipo, Posicion: posicion, Value: result.StringValue}
+			l.entorno.SetVariable(idVar, value)
+			fmt.Println("Decremento de variable exitosa")
+		}else if sumando.Type == 0 && variable.Tipo == 1 {
+			l.generator.AddComment("Decremento de variable")
+			newTemp := l.generator.NewTemp()
+			valorVariable := l.Visit(ctx.Expr(0)).(Value)
+			strVal := strconv.Itoa(sumando.IntValue - valorVariable.IntValue)
+			l.generator.AddExpression(newTemp, valorVariable.Value, sumando.Value, "-")
+			result = NewValue(newTemp, true, FLOAT, strVal, false, false, false)
+			l.generator.AddSetStack(strconv.Itoa(variable.Posicion), result.Value)
+			l.generator.AddBr()
+			linea := ctx.GetStart().GetLine()
+			columna := ctx.GetStart().GetColumn()
+			tipo := result.Type
+			posicion := variable.Posicion
+			value := Symbol{Lin: linea, Col: columna, Tipo: tipo, Posicion: posicion, Value: result.StringValue}
+			l.entorno.SetVariable(idVar, value)
+			fmt.Println("Decremento de variable exitosa")
+		} else {
+			//retornar error de tipos y retornar nil
+			fmt.Println("error en los tipos en el decremento")
+			l.generator.AddErrorAsignacion()
+		}
+	}else{
+		fmt.Println("La variable es constante")
+		l.generator.AddErrorAsignacion()
+	}
+	return result
 }

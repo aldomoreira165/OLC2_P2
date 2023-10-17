@@ -257,8 +257,8 @@ rangostmt
     ;
 
 opasignstmt
-    : ID ADD IG expr                           #Incremento
-    | ID SUB IG expr                           #Decremento  
+    : expr ADD IG expr                           #Incremento
+    | expr SUB IG expr                           #Decremento  
     ;
 
 expr
