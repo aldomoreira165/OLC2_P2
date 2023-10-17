@@ -28,10 +28,13 @@ func (l *Visitor) VisitIfstmt(ctx *parser.IfstmtContext) interface{} {
 	//*****************************************add false labels
 
 	//else if 
-	if ctx.Elseifstmt(0) != nil {
+	if ctx.AllElseifstmt() != nil {
 		//ejecutando sentencias de else if
-		result = l.Visit(ctx.Elseifstmt(0)).(Value)
-		OutLvls = append(OutLvls, result.OutLabel...)
+		elseifStmts := ctx.AllElseifstmt()
+		for i := 0; i < len(elseifStmts); i++ {
+			result = l.Visit(elseifStmts[i]).(Value)
+			OutLvls = append(OutLvls, result.OutLabel...)
+		}
 	}
 
 	//else
@@ -94,7 +97,6 @@ func (l *Visitor) VisitWhilestmt(ctx *parser.WhilestmtContext) interface{} {
 	l.generator.AddLabel(RetLvl)
 	condicion = l.Visit(ctx.Expr()).(Value)
 	//******************** add break & continue lvls
-
 	l.generator.AddContinue(RetLvl)
 	l.generator.AddBreak(condicion.FalseLabel[0].(string))
 	//add true labels
@@ -103,6 +105,7 @@ func (l *Visitor) VisitWhilestmt(ctx *parser.WhilestmtContext) interface{} {
 	}
 	//instrucciones de while
 	result = l.Visit(ctx.BlockFunc()).(Value)
+
 	//add goto
 	l.generator.AddGoto(RetLvl)
 	//add false labels

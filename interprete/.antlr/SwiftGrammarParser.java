@@ -4172,8 +4172,8 @@ public class SwiftGrammarParser extends Parser {
 		public TerminalNode ID() { return getToken(SwiftGrammarParser.ID, 0); }
 		public TerminalNode IN() { return getToken(SwiftGrammarParser.IN, 0); }
 		public TerminalNode LLAVEIZQ() { return getToken(SwiftGrammarParser.LLAVEIZQ, 0); }
-		public BlockContext block() {
-			return getRuleContext(BlockContext.class,0);
+		public BlockFuncContext blockFunc() {
+			return getRuleContext(BlockFuncContext.class,0);
 		}
 		public TerminalNode LLAVEDER() { return getToken(SwiftGrammarParser.LLAVEDER, 0); }
 		public ExprContext expr() {
@@ -4227,7 +4227,7 @@ public class SwiftGrammarParser extends Parser {
 			setState(635);
 			match(LLAVEIZQ);
 			setState(636);
-			block();
+			blockFunc();
 			setState(637);
 			match(LLAVEDER);
 			}
@@ -6039,7 +6039,7 @@ public class SwiftGrammarParser extends Parser {
 		"\u0000\u0276\u0279\u0005\u000f\u0000\u0000\u0277\u027a\u0003n7\u0000\u0278"+
 		"\u027a\u0003j5\u0000\u0279\u0277\u0001\u0000\u0000\u0000\u0279\u0278\u0001"+
 		"\u0000\u0000\u0000\u027a\u027b\u0001\u0000\u0000\u0000\u027b\u027c\u0005"+
-		"8\u0000\u0000\u027c\u027d\u0003\u0002\u0001\u0000\u027d\u027e\u00059\u0000"+
+		"8\u0000\u0000\u027c\u027d\u0003\u0004\u0002\u0000\u027d\u027e\u00059\u0000"+
 		"\u0000\u027eg\u0001\u0000\u0000\u0000\u027f\u0280\u0005\u000e\u0000\u0000"+
 		"\u0280\u0281\u0003n7\u0000\u0281\u0282\u0005\u000b\u0000\u0000\u0282\u0283"+
 		"\u00058\u0000\u0000\u0283\u0284\u0003\u0002\u0001\u0000\u0284\u0285\u0005"+

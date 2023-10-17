@@ -5,13 +5,16 @@ import (
 )
 
 func (l *Visitor) VisitBreakstmt(ctx *parser.BreakstmtContext) interface{} {
-	return nil
+	result := NewValue("", false, NIL, "nil", false, true, false)
+	return result
 }
 
 func (l *Visitor) VisitReturnstmt(ctx *parser.ReturnstmtContext) interface{} {
-	return nil
+	result := NewValue("", false, NIL, "nil", true, false, false)
+	return result
 }
 
 func (l *Visitor) VisitContinuestmt(ctx *parser.ContinuestmtContext) interface{} {
-	return nil
+	result := NewValue("", false, NIL, "nil", false, false, true)
+	return result
 }

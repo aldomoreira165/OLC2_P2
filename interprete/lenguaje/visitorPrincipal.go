@@ -55,6 +55,7 @@ func (l *Visitor) VisitBlockFunc(ctx *parser.BlockFuncContext) interface{} {
 			l.generator.AddLabel(lvl.(string))
 		}
 	}
+	fmt.Println("result: ", result)
 	return result
 }
 

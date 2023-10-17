@@ -245,7 +245,7 @@ whilestmt
     ;
 
 forstmt
-    : FOR ID IN (expr|rangostmt) LLAVEIZQ block LLAVEDER
+    : FOR ID IN (expr|rangostmt) LLAVEIZQ blockFunc LLAVEDER
     ;
 
 guardstmt

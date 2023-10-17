@@ -357,7 +357,7 @@ func swiftgrammarParserInit() {
 		626, 627, 5, 57, 0, 0, 627, 101, 1, 0, 0, 0, 628, 629, 5, 13, 0, 0, 629,
 		630, 5, 38, 0, 0, 630, 633, 5, 15, 0, 0, 631, 634, 3, 110, 55, 0, 632,
 		634, 3, 106, 53, 0, 633, 631, 1, 0, 0, 0, 633, 632, 1, 0, 0, 0, 634, 635,
-		1, 0, 0, 0, 635, 636, 5, 56, 0, 0, 636, 637, 3, 2, 1, 0, 637, 638, 5, 57,
+		1, 0, 0, 0, 635, 636, 5, 56, 0, 0, 636, 637, 3, 4, 2, 0, 637, 638, 5, 57,
 		0, 0, 638, 103, 1, 0, 0, 0, 639, 640, 5, 14, 0, 0, 640, 641, 3, 110, 55,
 		0, 641, 642, 5, 11, 0, 0, 642, 643, 5, 56, 0, 0, 643, 644, 3, 2, 1, 0,
 		644, 645, 5, 57, 0, 0, 645, 105, 1, 0, 0, 0, 646, 647, 3, 110, 55, 0, 647,
@@ -12067,7 +12067,7 @@ type IForstmtContext interface {
 	ID() antlr.TerminalNode
 	IN() antlr.TerminalNode
 	LLAVEIZQ() antlr.TerminalNode
-	Block() IBlockContext
+	BlockFunc() IBlockFuncContext
 	LLAVEDER() antlr.TerminalNode
 	Expr() IExprContext
 	Rangostmt() IRangostmtContext
@@ -12124,10 +12124,10 @@ func (s *ForstmtContext) LLAVEIZQ() antlr.TerminalNode {
 	return s.GetToken(SwiftGrammarParserLLAVEIZQ, 0)
 }
 
-func (s *ForstmtContext) Block() IBlockContext {
+func (s *ForstmtContext) BlockFunc() IBlockFuncContext {
 	var t antlr.RuleContext
 	for _, ctx := range s.GetChildren() {
-		if _, ok := ctx.(IBlockContext); ok {
+		if _, ok := ctx.(IBlockFuncContext); ok {
 			t = ctx.(antlr.RuleContext)
 			break
 		}
@@ -12137,7 +12137,7 @@ func (s *ForstmtContext) Block() IBlockContext {
 		return nil
 	}
 
-	return t.(IBlockContext)
+	return t.(IBlockFuncContext)
 }
 
 func (s *ForstmtContext) LLAVEDER() antlr.TerminalNode {
@@ -12266,7 +12266,7 @@ func (p *SwiftGrammarParser) Forstmt() (localctx IForstmtContext) {
 	}
 	{
 		p.SetState(636)
-		p.Block()
+		p.BlockFunc()
 	}
 	{
 		p.SetState(637)

@@ -9,17 +9,23 @@ type Value struct {
 	TrueLabel  []interface{}
 	FalseLabel []interface{}
 	OutLabel   []interface{}
+	ReturnFlag   bool
+	BreakFlag    bool
+	ContinueFlag bool
 	IntValue   int
 	StringValue string
 }
 
-func NewValue(Val string, tmp bool, typ TipoExpresion, strVal string) Value {
+func NewValue(Val string, tmp bool, typ TipoExpresion, strVal string, ret, br, cont bool) Value {
 	result := Value{
 		Value:    Val,
 		IsTemp:   tmp,
 		Type:     typ,
 		IntValue: 0,
 		StringValue: strVal,
+		ReturnFlag:   ret,
+		BreakFlag:    br,
+		ContinueFlag: cont,
 	}
 	return result
 }
