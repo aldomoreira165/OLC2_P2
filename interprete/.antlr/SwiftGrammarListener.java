@@ -635,15 +635,17 @@ public interface SwiftGrammarListener extends ParseTreeListener {
 	 */
 	void exitWhilestmt(SwiftGrammarParser.WhilestmtContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link SwiftGrammarParser#forstmt}.
+	 * Enter a parse tree produced by the {@code ForRange}
+	 * labeled alternative in {@link SwiftGrammarParser#forstmt}.
 	 * @param ctx the parse tree
 	 */
-	void enterForstmt(SwiftGrammarParser.ForstmtContext ctx);
+	void enterForRange(SwiftGrammarParser.ForRangeContext ctx);
 	/**
-	 * Exit a parse tree produced by {@link SwiftGrammarParser#forstmt}.
+	 * Exit a parse tree produced by the {@code ForRange}
+	 * labeled alternative in {@link SwiftGrammarParser#forstmt}.
 	 * @param ctx the parse tree
 	 */
-	void exitForstmt(SwiftGrammarParser.ForstmtContext ctx);
+	void exitForRange(SwiftGrammarParser.ForRangeContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link SwiftGrammarParser#guardstmt}.
 	 * @param ctx the parse tree
@@ -654,16 +656,6 @@ public interface SwiftGrammarListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitGuardstmt(SwiftGrammarParser.GuardstmtContext ctx);
-	/**
-	 * Enter a parse tree produced by {@link SwiftGrammarParser#rangostmt}.
-	 * @param ctx the parse tree
-	 */
-	void enterRangostmt(SwiftGrammarParser.RangostmtContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link SwiftGrammarParser#rangostmt}.
-	 * @param ctx the parse tree
-	 */
-	void exitRangostmt(SwiftGrammarParser.RangostmtContext ctx);
 	/**
 	 * Enter a parse tree produced by the {@code Incremento}
 	 * labeled alternative in {@link SwiftGrammarParser#opasignstmt}.

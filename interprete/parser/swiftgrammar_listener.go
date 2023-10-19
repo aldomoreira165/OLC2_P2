@@ -181,14 +181,11 @@ type SwiftGrammarListener interface {
 	// EnterWhilestmt is called when entering the whilestmt production.
 	EnterWhilestmt(c *WhilestmtContext)
 
-	// EnterForstmt is called when entering the forstmt production.
-	EnterForstmt(c *ForstmtContext)
+	// EnterForRange is called when entering the ForRange production.
+	EnterForRange(c *ForRangeContext)
 
 	// EnterGuardstmt is called when entering the guardstmt production.
 	EnterGuardstmt(c *GuardstmtContext)
-
-	// EnterRangostmt is called when entering the rangostmt production.
-	EnterRangostmt(c *RangostmtContext)
 
 	// EnterIncremento is called when entering the Incremento production.
 	EnterIncremento(c *IncrementoContext)
@@ -439,14 +436,11 @@ type SwiftGrammarListener interface {
 	// ExitWhilestmt is called when exiting the whilestmt production.
 	ExitWhilestmt(c *WhilestmtContext)
 
-	// ExitForstmt is called when exiting the forstmt production.
-	ExitForstmt(c *ForstmtContext)
+	// ExitForRange is called when exiting the ForRange production.
+	ExitForRange(c *ForRangeContext)
 
 	// ExitGuardstmt is called when exiting the guardstmt production.
 	ExitGuardstmt(c *GuardstmtContext)
-
-	// ExitRangostmt is called when exiting the rangostmt production.
-	ExitRangostmt(c *RangostmtContext)
 
 	// ExitIncremento is called when exiting the Incremento production.
 	ExitIncremento(c *IncrementoContext)

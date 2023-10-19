@@ -712,13 +712,13 @@ public class SwiftGrammarBaseListener implements SwiftGrammarListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterForstmt(SwiftGrammarParser.ForstmtContext ctx) { }
+	@Override public void enterForRange(SwiftGrammarParser.ForRangeContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitForstmt(SwiftGrammarParser.ForstmtContext ctx) { }
+	@Override public void exitForRange(SwiftGrammarParser.ForRangeContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
@@ -731,18 +731,6 @@ public class SwiftGrammarBaseListener implements SwiftGrammarListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitGuardstmt(SwiftGrammarParser.GuardstmtContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void enterRangostmt(SwiftGrammarParser.RangostmtContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitRangostmt(SwiftGrammarParser.RangostmtContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *

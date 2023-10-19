@@ -181,14 +181,11 @@ type SwiftGrammarVisitor interface {
 	// Visit a parse tree produced by SwiftGrammarParser#whilestmt.
 	VisitWhilestmt(ctx *WhilestmtContext) interface{}
 
-	// Visit a parse tree produced by SwiftGrammarParser#forstmt.
-	VisitForstmt(ctx *ForstmtContext) interface{}
+	// Visit a parse tree produced by SwiftGrammarParser#ForRange.
+	VisitForRange(ctx *ForRangeContext) interface{}
 
 	// Visit a parse tree produced by SwiftGrammarParser#guardstmt.
 	VisitGuardstmt(ctx *GuardstmtContext) interface{}
-
-	// Visit a parse tree produced by SwiftGrammarParser#rangostmt.
-	VisitRangostmt(ctx *RangostmtContext) interface{}
 
 	// Visit a parse tree produced by SwiftGrammarParser#Incremento.
 	VisitIncremento(ctx *IncrementoContext) interface{}

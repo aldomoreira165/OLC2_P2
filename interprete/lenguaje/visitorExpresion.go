@@ -74,6 +74,7 @@ func (l *Visitor) VisitOpExpr(ctx *parser.OpExprContext) interface{} {
 				strVal := strconv.Itoa(num1 + num2)
 				l.generator.AddExpression(newTemp, op_izq.Value, op_der.Value, "+")
 				result = NewValue(newTemp, true, dominante, strVal, false, false, false)
+				result.IntValue = num1 + num2
 				return result
 			} else if dominante == FLOAT {
 				num1, _ := strconv.ParseFloat(op_izq.StringValue, 64)
@@ -119,6 +120,7 @@ func (l *Visitor) VisitOpExpr(ctx *parser.OpExprContext) interface{} {
 				strVal := strconv.Itoa(num1 - num2)
 				l.generator.AddExpression(newTemp, op_izq.Value, op_der.Value, "-")
 				result = NewValue(newTemp, true, dominante, strVal, false, false, false)
+				result.IntValue = num1 - num2
 				return result
 			} else if dominante == FLOAT {
 				num1, _ := strconv.ParseFloat(op_izq.StringValue, 64)
@@ -146,6 +148,7 @@ func (l *Visitor) VisitOpExpr(ctx *parser.OpExprContext) interface{} {
 				strVal := strconv.Itoa(num1 * num2)
 				l.generator.AddExpression(newTemp, op_izq.Value, op_der.Value, "*")
 				result = NewValue(newTemp, true, dominante, strVal, false, false, false)
+				result.IntValue = num1 * num2
 				return result
 			} else if dominante == FLOAT {
 				num1, _ := strconv.ParseFloat(op_izq.Value, 64)
@@ -482,6 +485,7 @@ func (l *Visitor) VisitNumExpr(ctx *parser.NumExprContext) interface{} {
 		}
 		primitive := NewPrimitive(ctx.GetStart().GetLine(), ctx.GetStart().GetColumn(), num, INTEGER)
 		result := NewValue(fmt.Sprintf("%v", primitive.Valor), false, primitive.Tipo, numStr, false, false, false)
+		result.IntValue = num
 		return result
 	}
 }

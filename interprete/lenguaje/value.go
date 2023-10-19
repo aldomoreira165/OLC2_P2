@@ -6,6 +6,7 @@ type Value struct {
 	Value      string
 	IsTemp     bool
 	Type       TipoExpresion
+	ArrType    TipoExpresion
 	TrueLabel  []interface{}
 	FalseLabel []interface{}
 	OutLabel   []interface{}
@@ -21,6 +22,7 @@ func NewValue(Val string, tmp bool, typ TipoExpresion, strVal string, ret, br, c
 		Value:    Val,
 		IsTemp:   tmp,
 		Type:     typ,
+		ArrType: NIL,
 		IntValue: 0,
 		StringValue: strVal,
 		ReturnFlag:   ret,

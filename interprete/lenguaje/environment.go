@@ -38,6 +38,7 @@ func (env Environment) GetVariable(id string) Symbol {
 	tmpEnv = env
 	for {
 		if variable, ok := tmpEnv.Tabla[id]; ok {
+			fmt.Println("La variable ", id, " existe ", variable)
 			return variable
 		}
 		if tmpEnv.Anterior == nil {

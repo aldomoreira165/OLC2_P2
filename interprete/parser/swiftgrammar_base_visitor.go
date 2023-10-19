@@ -239,15 +239,11 @@ func (v *BaseSwiftGrammarVisitor) VisitWhilestmt(ctx *WhilestmtContext) interfac
 	return v.VisitChildren(ctx)
 }
 
-func (v *BaseSwiftGrammarVisitor) VisitForstmt(ctx *ForstmtContext) interface{} {
+func (v *BaseSwiftGrammarVisitor) VisitForRange(ctx *ForRangeContext) interface{} {
 	return v.VisitChildren(ctx)
 }
 
 func (v *BaseSwiftGrammarVisitor) VisitGuardstmt(ctx *GuardstmtContext) interface{} {
-	return v.VisitChildren(ctx)
-}
-
-func (v *BaseSwiftGrammarVisitor) VisitRangostmt(ctx *RangostmtContext) interface{} {
 	return v.VisitChildren(ctx)
 }
 

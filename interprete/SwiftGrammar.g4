@@ -245,15 +245,11 @@ whilestmt
     ;
 
 forstmt
-    : FOR ID IN (expr|rangostmt) LLAVEIZQ blockFunc LLAVEDER
+    : FOR ID IN expr PUNTO PUNTO PUNTO expr LLAVEIZQ blockFunc LLAVEDER #ForRange
     ;
 
 guardstmt
     : GUARD expr ELSE LLAVEIZQ block LLAVEDER
-    ;
-
-rangostmt
-    : expr PUNTO PUNTO PUNTO expr
     ;
 
 opasignstmt
