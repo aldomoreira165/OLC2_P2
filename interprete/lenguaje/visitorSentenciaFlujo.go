@@ -11,6 +11,13 @@ func (l *Visitor) VisitIfstmt(ctx *parser.IfstmtContext) interface{} {
 	l.generator.AddComment("Inicio de if")
 	var condicion, result Value
 	var OutLvls []interface{}
+	var newEnv Environment
+
+	//entorno nuevo
+	newEnv = NewEnvironment(l.entorno, "if")
+	newEnv.Size["size"] = l.entorno.Size["size"] + 1
+	l.entorno = newEnv
+
 	condicion = l.Visit(ctx.Expr()).(Value)
 	newLabel := l.generator.NewLabel()
 
@@ -29,21 +36,39 @@ func (l *Visitor) VisitIfstmt(ctx *parser.IfstmtContext) interface{} {
 	}
 	//*****************************************add false labels
 
+	l.entorno = newEnv.Anterior.(Environment)
+
 	//else if
 	if ctx.AllElseifstmt() != nil {
+
+		//ento nuevo
+		newEnv = NewEnvironment(l.entorno, "elseif")
+		newEnv.Size["size"] = l.entorno.Size["size"] + 1
+		l.entorno = newEnv
+
 		//ejecutando sentencias de else if
 		elseifStmts := ctx.AllElseifstmt()
 		for i := 0; i < len(elseifStmts); i++ {
 			result = l.Visit(elseifStmts[i]).(Value)
 			OutLvls = append(OutLvls, result.OutLabel...)
 		}
+
+		l.entorno = newEnv.Anterior.(Environment)
 	}
 
 	//else
 	if ctx.ELSE() != nil {
+		
+		//ento nuevo
+		newEnv = NewEnvironment(l.entorno, "else")
+		newEnv.Size["size"] = l.entorno.Size["size"] + 1
+		l.entorno = newEnv
+
 		//ejecutando sentencias de else
 		result = l.Visit(ctx.BlockFunc(1)).(Value)
 		OutLvls = append(OutLvls, result.OutLabel...)
+
+		l.entorno = newEnv.Anterior.(Environment)
 	}
 
 	OutLvls = append(OutLvls, newLabel)
