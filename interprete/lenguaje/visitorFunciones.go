@@ -68,7 +68,13 @@ func (l *Visitor) VisitAccfuncstm(ctx *parser.AccfuncstmContext) interface{} {
 		
 		for _, param := range funcParams {
 			fmt.Println("PARAMETRO: ", param.(Value).StringValue)
-			l.generator.AddSetStack("(int)"+tmp1, param.(Value).StringValue)
+
+			if param.(Value).Type == STRING || param.(Value).Type == BOOLEAN || param.(Value).Type == CHAR{
+				l.generator.AddSetStack("(int)"+tmp1, param.(Value).Value)
+			}else{
+				l.generator.AddSetStack("(int)"+tmp1, param.(Value).StringValue)
+			}
+				
 			
 			if len(funcParams) - 1 != count {
 				l.generator.AddExpression(tmp1, tmp1, "1", "+")
@@ -103,28 +109,29 @@ func (l *Visitor) VisitParametros(ctx *parser.ParametrosContext) interface{} {
 		id := paramList[i].GetText()
 		typeParam := getTypeParam(typeList[counter].GetText())
 		fmt.Println("Type param: ", typeParam)
-		result = NewValue(id, false, INTEGER, id, false, false, false)
+		result = NewValue(id, false, typeParam, id, false, false, false)
 		listaParametros = append(listaParametros, result)
 		counter++
 	}
-
+	fmt.Println("Parametros declaracion: ", listaParametros)
 	return listaParametros
 }
 
 func (l *Visitor) VisitParametroscall(ctx *parser.ParametroscallContext) interface{} {
 	var listaParametros []interface{}
 	var result Value
-	paramIdList := ctx.AllID()
+	//paramIdList := ctx.AllID()
 	paramExprList := ctx.AllExpr()
 
 	for i := 0; i < len(paramExprList); i++ {
-		id := paramIdList[i].GetText()
+		//id := paramIdList[i].GetText()
 		expr := l.Visit(paramExprList[i]).(Value)
-		result = NewValue(id, false, INTEGER, expr.StringValue, false, false, false)
-		l.entorno.SaveVariable(id, expr.Type, false, 0, 0, expr.StringValue)
+		result = NewValue(expr.Value, false, expr.Type, expr.StringValue, false, false, false)
+		l.entorno.SaveVariable(expr.Value, expr.Type, false, 0, 0, expr.StringValue)
 		listaParametros = append(listaParametros, result)
 	}
 
+	fmt.Println("Parametros llamada: ", listaParametros)
 	return listaParametros
 }
 
@@ -138,6 +145,8 @@ func getTypeParam(typeStr string) TipoExpresion {
 		return STRING
 	case "bool":
 		return BOOLEAN
+	case "character":
+		return CHAR
 	default:
 		return NIL
 	}
