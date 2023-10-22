@@ -27,15 +27,18 @@ func (l *Visitor) VisitFuncionNormal(ctx *parser.FuncionNormalContext) interface
 		for _, param := range listaParametros {
 			l.entorno.SaveVariable(param.(Value).Value, param.(Value).Type, false, 0, 0, param.(Value).StringValue)
 		}
-
-		fmt.Println("ENTORNO", l.entorno)
 	}
 
 	//instrucciones de funcion
-	result = l.Visit(ctx.BlockFunc()).(Value)
+	instruccionesFuncion := ctx.BlockFunc()
 
-	for _, lvl := range result.OutLabel {
-		l.generator.AddLabel(lvl.(string))
+	//recorrer instrucciones de funcion
+	for _, StamentsCtx := range instruccionesFuncion.AllStmt() {
+		result = l.Visit(StamentsCtx).(Value)
+
+		for _, lvl := range result.OutLabel {
+			l.generator.AddLabel(lvl.(string))
+		}	
 	}
 
 	l.generator.AddComment("******** Fin Funcion " + idFunction)

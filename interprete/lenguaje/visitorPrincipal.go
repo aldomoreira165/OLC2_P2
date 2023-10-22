@@ -48,14 +48,14 @@ func (l *Visitor) VisitBlock(ctx *parser.BlockContext) interface{} {
 }
 
 func (l *Visitor) VisitBlockFunc(ctx *parser.BlockFuncContext) interface{} {
-	var result Value
+	//arreglo de statement
+	var arrStm []interface{}
+
 	for _, StamentsCtx := range ctx.AllStmt() {
-		result:= l.Visit(StamentsCtx).(Value)
-		for _, lvl := range result.OutLabel {
-			l.generator.AddLabel(lvl.(string))
-		}
+		arrStm = append(arrStm, StamentsCtx)
 	}
-	return result
+
+	return arrStm
 }
 
 // visit de las sentencias

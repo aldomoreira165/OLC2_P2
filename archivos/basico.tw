@@ -58,7 +58,7 @@ if (valorVerdadero == (50 + 50 + (val - val))) && (!(!true)) {
 
 var x1 = 15
 
-if x1 % 2 == 0 {
+if 15 % 2 == 0 {
     print(">>>>> numeroPar ingreso a if verdadero,", x1, "es par")
 } else {
     print(">>>>> numeroPar ingreso a if falso,", x1, "no es par")

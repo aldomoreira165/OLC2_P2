@@ -232,8 +232,6 @@ func (g *Generator) GenerateFinalCode() {
 	
 	if len(g.GetTemps()) > 0 {
 		//****************** add temporal declaration
-		fmt.Println("Temps: ", g.GetTemps())
-		fmt.Println("Temps: ", len(g.GetTemps()))
 		g.FinalCode= append(g.FinalCode,"double ")
 		for i, s := range g.GetTemps() {
 			g.FinalCode= append(g.FinalCode,fmt.Sprintf("%v", s))

@@ -220,9 +220,9 @@ elseifstmt: ELSE IF expr LLAVEIZQ blockFunc LLAVEDER;
 
 switchstmt: SWITCH expr LLAVEIZQ  caseStmt+ defaultCase? LLAVEDER;
 
-caseStmt: CASE expr DOSPUNTOS block;
+caseStmt: CASE expr DOSPUNTOS blockFunc;
 
-defaultCase: DEFAULT DOSPUNTOS block;
+defaultCase: DEFAULT DOSPUNTOS blockFunc;
 
 typedDeclstmt
     : (VAR|LET) ID DOSPUNTOS tipo IG expr 

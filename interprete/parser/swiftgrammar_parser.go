@@ -343,8 +343,8 @@ func swiftgrammarParserInit() {
 		0, 0, 584, 586, 3, 90, 45, 0, 585, 584, 1, 0, 0, 0, 585, 586, 1, 0, 0,
 		0, 586, 587, 1, 0, 0, 0, 587, 588, 5, 57, 0, 0, 588, 87, 1, 0, 0, 0, 589,
 		590, 5, 17, 0, 0, 590, 591, 3, 108, 54, 0, 591, 592, 5, 60, 0, 0, 592,
-		593, 3, 2, 1, 0, 593, 89, 1, 0, 0, 0, 594, 595, 5, 18, 0, 0, 595, 596,
-		5, 60, 0, 0, 596, 597, 3, 2, 1, 0, 597, 91, 1, 0, 0, 0, 598, 599, 7, 0,
+		593, 3, 4, 2, 0, 593, 89, 1, 0, 0, 0, 594, 595, 5, 18, 0, 0, 595, 596,
+		5, 60, 0, 0, 596, 597, 3, 4, 2, 0, 597, 91, 1, 0, 0, 0, 598, 599, 7, 0,
 		0, 0, 599, 600, 5, 38, 0, 0, 600, 601, 5, 60, 0, 0, 601, 602, 3, 110, 55,
 		0, 602, 603, 5, 44, 0, 0, 603, 604, 3, 108, 54, 0, 604, 93, 1, 0, 0, 0,
 		605, 606, 7, 0, 0, 0, 606, 607, 5, 38, 0, 0, 607, 608, 5, 44, 0, 0, 608,
@@ -10912,7 +10912,7 @@ type ICaseStmtContext interface {
 	CASE() antlr.TerminalNode
 	Expr() IExprContext
 	DOSPUNTOS() antlr.TerminalNode
-	Block() IBlockContext
+	BlockFunc() IBlockFuncContext
 
 	// IsCaseStmtContext differentiates from other interfaces.
 	IsCaseStmtContext()
@@ -10974,10 +10974,10 @@ func (s *CaseStmtContext) DOSPUNTOS() antlr.TerminalNode {
 	return s.GetToken(SwiftGrammarParserDOSPUNTOS, 0)
 }
 
-func (s *CaseStmtContext) Block() IBlockContext {
+func (s *CaseStmtContext) BlockFunc() IBlockFuncContext {
 	var t antlr.RuleContext
 	for _, ctx := range s.GetChildren() {
-		if _, ok := ctx.(IBlockContext); ok {
+		if _, ok := ctx.(IBlockFuncContext); ok {
 			t = ctx.(antlr.RuleContext)
 			break
 		}
@@ -10987,7 +10987,7 @@ func (s *CaseStmtContext) Block() IBlockContext {
 		return nil
 	}
 
-	return t.(IBlockContext)
+	return t.(IBlockFuncContext)
 }
 
 func (s *CaseStmtContext) GetRuleContext() antlr.RuleContext {
@@ -11046,7 +11046,7 @@ func (p *SwiftGrammarParser) CaseStmt() (localctx ICaseStmtContext) {
 	}
 	{
 		p.SetState(592)
-		p.Block()
+		p.BlockFunc()
 	}
 
 errorExit:
@@ -11072,7 +11072,7 @@ type IDefaultCaseContext interface {
 	// Getter signatures
 	DEFAULT() antlr.TerminalNode
 	DOSPUNTOS() antlr.TerminalNode
-	Block() IBlockContext
+	BlockFunc() IBlockFuncContext
 
 	// IsDefaultCaseContext differentiates from other interfaces.
 	IsDefaultCaseContext()
@@ -11118,10 +11118,10 @@ func (s *DefaultCaseContext) DOSPUNTOS() antlr.TerminalNode {
 	return s.GetToken(SwiftGrammarParserDOSPUNTOS, 0)
 }
 
-func (s *DefaultCaseContext) Block() IBlockContext {
+func (s *DefaultCaseContext) BlockFunc() IBlockFuncContext {
 	var t antlr.RuleContext
 	for _, ctx := range s.GetChildren() {
-		if _, ok := ctx.(IBlockContext); ok {
+		if _, ok := ctx.(IBlockFuncContext); ok {
 			t = ctx.(antlr.RuleContext)
 			break
 		}
@@ -11131,7 +11131,7 @@ func (s *DefaultCaseContext) Block() IBlockContext {
 		return nil
 	}
 
-	return t.(IBlockContext)
+	return t.(IBlockFuncContext)
 }
 
 func (s *DefaultCaseContext) GetRuleContext() antlr.RuleContext {
@@ -11186,7 +11186,7 @@ func (p *SwiftGrammarParser) DefaultCase() (localctx IDefaultCaseContext) {
 	}
 	{
 		p.SetState(596)
-		p.Block()
+		p.BlockFunc()
 	}
 
 errorExit:

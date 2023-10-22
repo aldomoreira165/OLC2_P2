@@ -3787,8 +3787,8 @@ public class SwiftGrammarParser extends Parser {
 			return getRuleContext(ExprContext.class,0);
 		}
 		public TerminalNode DOSPUNTOS() { return getToken(SwiftGrammarParser.DOSPUNTOS, 0); }
-		public BlockContext block() {
-			return getRuleContext(BlockContext.class,0);
+		public BlockFuncContext blockFunc() {
+			return getRuleContext(BlockFuncContext.class,0);
 		}
 		public CaseStmtContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
@@ -3817,7 +3817,7 @@ public class SwiftGrammarParser extends Parser {
 			setState(591);
 			match(DOSPUNTOS);
 			setState(592);
-			block();
+			blockFunc();
 			}
 		}
 		catch (RecognitionException re) {
@@ -3835,8 +3835,8 @@ public class SwiftGrammarParser extends Parser {
 	public static class DefaultCaseContext extends ParserRuleContext {
 		public TerminalNode DEFAULT() { return getToken(SwiftGrammarParser.DEFAULT, 0); }
 		public TerminalNode DOSPUNTOS() { return getToken(SwiftGrammarParser.DOSPUNTOS, 0); }
-		public BlockContext block() {
-			return getRuleContext(BlockContext.class,0);
+		public BlockFuncContext blockFunc() {
+			return getRuleContext(BlockFuncContext.class,0);
 		}
 		public DefaultCaseContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
@@ -3863,7 +3863,7 @@ public class SwiftGrammarParser extends Parser {
 			setState(595);
 			match(DOSPUNTOS);
 			setState(596);
-			block();
+			blockFunc();
 			}
 		}
 		catch (RecognitionException re) {
@@ -5975,9 +5975,9 @@ public class SwiftGrammarParser extends Parser {
 		"\u0000\u0000\u0000\u0249\u024a\u0001\u0000\u0000\u0000\u024a\u024b\u0001"+
 		"\u0000\u0000\u0000\u024b\u024c\u00059\u0000\u0000\u024cW\u0001\u0000\u0000"+
 		"\u0000\u024d\u024e\u0005\u0011\u0000\u0000\u024e\u024f\u0003l6\u0000\u024f"+
-		"\u0250\u0005<\u0000\u0000\u0250\u0251\u0003\u0002\u0001\u0000\u0251Y\u0001"+
+		"\u0250\u0005<\u0000\u0000\u0250\u0251\u0003\u0004\u0002\u0000\u0251Y\u0001"+
 		"\u0000\u0000\u0000\u0252\u0253\u0005\u0012\u0000\u0000\u0253\u0254\u0005"+
-		"<\u0000\u0000\u0254\u0255\u0003\u0002\u0001\u0000\u0255[\u0001\u0000\u0000"+
+		"<\u0000\u0000\u0254\u0255\u0003\u0004\u0002\u0000\u0255[\u0001\u0000\u0000"+
 		"\u0000\u0256\u0257\u0007\u0000\u0000\u0000\u0257\u0258\u0005&\u0000\u0000"+
 		"\u0258\u0259\u0005<\u0000\u0000\u0259\u025a\u0003n7\u0000\u025a\u025b"+
 		"\u0005,\u0000\u0000\u025b\u025c\u0003l6\u0000\u025c]\u0001\u0000\u0000"+
