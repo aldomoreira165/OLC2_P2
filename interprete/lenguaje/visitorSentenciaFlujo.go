@@ -120,6 +120,13 @@ func (l *Visitor) VisitDefaultCase(ctx *parser.DefaultCaseContext) interface{} {
 func (l *Visitor) VisitWhilestmt(ctx *parser.WhilestmtContext) interface{} {
 	l.generator.AddComment("Inicio de while")
 	var condicion, result Value
+	var newEnv Environment
+
+	//entorno nuevo
+	newEnv = NewEnvironment(l.entorno, "while")
+	newEnv.Size["size"] = l.entorno.Size["size"] + 1
+	l.entorno = newEnv
+
 	RetLvl := l.generator.NewLabel()
 	l.generator.AddLabel(RetLvl)
 	condicion = l.Visit(ctx.Expr()).(Value)
@@ -139,6 +146,8 @@ func (l *Visitor) VisitWhilestmt(ctx *parser.WhilestmtContext) interface{} {
 	for _, lvl := range condicion.FalseLabel {
 		l.generator.AddLabel(lvl.(string))
 	}
+
+	l.entorno = newEnv.Anterior.(Environment)
 	return result
 }
 
@@ -147,6 +156,13 @@ func (l *Visitor) VisitWhilestmt(ctx *parser.WhilestmtContext) interface{} {
 func (l *Visitor) VisitForRange(ctx *parser.ForRangeContext) interface{} {
 	l.generator.AddComment("Inicio de for")
 	var result, tmpArr, inicio, final Value
+	var newEnv Environment
+
+	//entorno nuevo
+	newEnv = NewEnvironment(l.entorno, "for")
+	newEnv.Size["size"] = l.entorno.Size["size"] + 1
+	l.entorno = newEnv
+
 	id := ctx.ID().GetText()
 	var arrType TipoExpresion
 	var tmpList []Value
@@ -217,6 +233,8 @@ func (l *Visitor) VisitForRange(ctx *parser.ForRangeContext) interface{} {
 	l.generator.AddSetStack("(int)"+tmp6, tmp5)              //guardar i nuevamente
 	l.generator.AddGoto(lvl1)
 	l.generator.AddLabel(lvl3)
+
+	l.entorno = newEnv.Anterior.(Environment)
 	return result
 }
 

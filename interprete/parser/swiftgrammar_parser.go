@@ -306,12 +306,12 @@ func swiftgrammarParserInit() {
 		0, 0, 478, 73, 1, 0, 0, 0, 479, 480, 5, 24, 0, 0, 480, 481, 5, 38, 0, 0,
 		481, 483, 5, 54, 0, 0, 482, 484, 3, 78, 39, 0, 483, 482, 1, 0, 0, 0, 483,
 		484, 1, 0, 0, 0, 484, 485, 1, 0, 0, 0, 485, 486, 5, 55, 0, 0, 486, 487,
-		5, 56, 0, 0, 487, 488, 3, 2, 1, 0, 488, 489, 5, 57, 0, 0, 489, 505, 1,
+		5, 56, 0, 0, 487, 488, 3, 4, 2, 0, 488, 489, 5, 57, 0, 0, 489, 505, 1,
 		0, 0, 0, 490, 491, 5, 24, 0, 0, 491, 492, 5, 38, 0, 0, 492, 494, 5, 54,
 		0, 0, 493, 495, 3, 78, 39, 0, 494, 493, 1, 0, 0, 0, 494, 495, 1, 0, 0,
 		0, 495, 496, 1, 0, 0, 0, 496, 497, 5, 55, 0, 0, 497, 498, 5, 52, 0, 0,
 		498, 499, 5, 47, 0, 0, 499, 500, 3, 110, 55, 0, 500, 501, 5, 56, 0, 0,
-		501, 502, 3, 2, 1, 0, 502, 503, 5, 57, 0, 0, 503, 505, 1, 0, 0, 0, 504,
+		501, 502, 3, 4, 2, 0, 502, 503, 5, 57, 0, 0, 503, 505, 1, 0, 0, 0, 504,
 		479, 1, 0, 0, 0, 504, 490, 1, 0, 0, 0, 505, 75, 1, 0, 0, 0, 506, 507, 5,
 		38, 0, 0, 507, 509, 5, 54, 0, 0, 508, 510, 3, 80, 40, 0, 509, 508, 1, 0,
 		0, 0, 509, 510, 1, 0, 0, 0, 510, 511, 1, 0, 0, 0, 511, 512, 5, 55, 0, 0,
@@ -9034,10 +9034,10 @@ func (s *FuncionNormalContext) LLAVEIZQ() antlr.TerminalNode {
 	return s.GetToken(SwiftGrammarParserLLAVEIZQ, 0)
 }
 
-func (s *FuncionNormalContext) Block() IBlockContext {
+func (s *FuncionNormalContext) BlockFunc() IBlockFuncContext {
 	var t antlr.RuleContext
 	for _, ctx := range s.GetChildren() {
-		if _, ok := ctx.(IBlockContext); ok {
+		if _, ok := ctx.(IBlockFuncContext); ok {
 			t = ctx.(antlr.RuleContext)
 			break
 		}
@@ -9047,7 +9047,7 @@ func (s *FuncionNormalContext) Block() IBlockContext {
 		return nil
 	}
 
-	return t.(IBlockContext)
+	return t.(IBlockFuncContext)
 }
 
 func (s *FuncionNormalContext) LLAVEDER() antlr.TerminalNode {
@@ -9154,10 +9154,10 @@ func (s *FuncionRetornoContext) LLAVEIZQ() antlr.TerminalNode {
 	return s.GetToken(SwiftGrammarParserLLAVEIZQ, 0)
 }
 
-func (s *FuncionRetornoContext) Block() IBlockContext {
+func (s *FuncionRetornoContext) BlockFunc() IBlockFuncContext {
 	var t antlr.RuleContext
 	for _, ctx := range s.GetChildren() {
-		if _, ok := ctx.(IBlockContext); ok {
+		if _, ok := ctx.(IBlockFuncContext); ok {
 			t = ctx.(antlr.RuleContext)
 			break
 		}
@@ -9167,7 +9167,7 @@ func (s *FuncionRetornoContext) Block() IBlockContext {
 		return nil
 	}
 
-	return t.(IBlockContext)
+	return t.(IBlockFuncContext)
 }
 
 func (s *FuncionRetornoContext) LLAVEDER() antlr.TerminalNode {
@@ -9283,7 +9283,7 @@ func (p *SwiftGrammarParser) Funcdclstmt() (localctx IFuncdclstmtContext) {
 		}
 		{
 			p.SetState(487)
-			p.Block()
+			p.BlockFunc()
 		}
 		{
 			p.SetState(488)
@@ -9373,7 +9373,7 @@ func (p *SwiftGrammarParser) Funcdclstmt() (localctx IFuncdclstmtContext) {
 		}
 		{
 			p.SetState(501)
-			p.Block()
+			p.BlockFunc()
 		}
 		{
 			p.SetState(502)

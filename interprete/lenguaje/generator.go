@@ -215,6 +215,10 @@ func (g *Generator) AddEnd() {
 	}
 }
 
+func (g *Generator) SetMainFlag(newVal bool) {
+	g.MainCode = newVal
+}
+
 //agregar headers
 func (g *Generator) GenerateFinalCode() {
 	//****************** add head

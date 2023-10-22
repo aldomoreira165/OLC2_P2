@@ -192,8 +192,8 @@ stringstmt
 //funciones
 
 funcdclstmt
-    : FUNC ID PARIZQ parametros? PARDER LLAVEIZQ block LLAVEDER #FuncionNormal
-    | FUNC ID PARIZQ parametros? PARDER SUB MAYOR tipo LLAVEIZQ block LLAVEDER #FuncionRetorno
+    : FUNC ID PARIZQ parametros? PARDER LLAVEIZQ blockFunc LLAVEDER #FuncionNormal
+    | FUNC ID PARIZQ parametros? PARDER SUB MAYOR tipo LLAVEIZQ blockFunc LLAVEDER #FuncionRetorno
     ;
 
 accfuncstm
