@@ -102,7 +102,7 @@ func (l *Visitor) VisitUntypedDeclstmt(ctx *parser.UntypedDeclstmtContext) inter
 	var result Value
 	var newVar Symbol
 	result = l.Visit(ctx.Expr()).(Value)
-	
+	fmt.Println("result de var unt: ", result)
 
 	if ctx.LET() != nil {
 		constVar = true

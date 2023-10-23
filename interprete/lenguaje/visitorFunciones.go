@@ -19,11 +19,11 @@ func (l *Visitor) VisitFuncionNormal(ctx *parser.FuncionNormalContext) interface
 	newEnv = NewEnvironment(l.entorno, "funcion "+idFunction)
 	newEnv.Size["size"] = l.entorno.Size["size"] + 1
 	l.entorno = newEnv
-	
+
 	//en caso existan parametros
 	if ctx.Parametros() != nil {
 		listaParametros := l.Visit(ctx.Parametros()).([]interface{})
-		
+
 		for _, param := range listaParametros {
 			l.entorno.SaveVariable(param.(Value).Value, param.(Value).Type, false, 0, 0, param.(Value).StringValue)
 		}
@@ -38,7 +38,7 @@ func (l *Visitor) VisitFuncionNormal(ctx *parser.FuncionNormalContext) interface
 
 		for _, lvl := range result.OutLabel {
 			l.generator.AddLabel(lvl.(string))
-		}	
+		}
 	}
 
 	l.generator.AddComment("******** Fin Funcion " + idFunction)
@@ -52,7 +52,58 @@ func (l *Visitor) VisitFuncionNormal(ctx *parser.FuncionNormalContext) interface
 }
 
 func (l *Visitor) VisitFuncionRetorno(ctx *parser.FuncionRetornoContext) interface{} {
-	return nil
+	idFunction := ctx.ID().GetText()
+	tipoRetorno := getTypeParam(ctx.Tipo().GetText())
+	var result, resultVal Value
+	l.generator.SetMainFlag(false)
+	l.generator.AddComment("******** Funcion " + idFunction)
+	l.generator.AddTittle(idFunction)
+
+	//entorno
+	var newEnv Environment
+	newEnv = NewEnvironment(l.entorno, "funcion "+idFunction)
+	newEnv.Size["size"] = l.entorno.Size["size"] + 1
+	l.entorno = newEnv
+
+	//en caso existan parametros
+	if ctx.Parametros() != nil {
+		listaParametros := l.Visit(ctx.Parametros()).([]interface{})
+
+		for _, param := range listaParametros {
+			l.entorno.SaveVariable(param.(Value).Value, param.(Value).Type, false, 0, 0, param.(Value).StringValue)
+		}
+	}
+
+	//instrucciones de funcion
+	instruccionesFuncion := ctx.BlockFunc()
+
+	//recorrer instrucciones de funcion
+	for _, StamentsCtx := range instruccionesFuncion.AllStmt() {
+		result = l.Visit(StamentsCtx).(Value)
+
+		if result.ReturnFlag {
+			if result.Type == tipoRetorno {
+				result.ReturnFlag = false
+				resultVal = result
+			} else {
+				fmt.Println("[ERROR] El tipo de retorno no coincide con el tipo de la funcion")
+			}
+
+			for _, lvl := range result.OutLabel {
+				l.generator.AddLabel(lvl.(string))
+			}
+		}
+	}
+
+	l.generator.AddComment("******** Fin Funcion " + idFunction)
+	l.generator.AddEnd()
+	l.generator.SetMainFlag(true)
+
+	//regresar al entorno anterior
+	l.entorno = newEnv.Anterior.(Environment)
+
+	fmt.Println("RESULTADO DE FUNCION: ", resultVal)
+	return resultVal
 }
 
 func (l *Visitor) VisitAccfuncstm(ctx *parser.AccfuncstmContext) interface{} {
@@ -64,32 +115,31 @@ func (l *Visitor) VisitAccfuncstm(ctx *parser.AccfuncstmContext) interface{} {
 
 	if ctx.Parametroscall() != nil {
 		tmp1 := l.generator.NewTemp()
-		l.generator.AddExpression(tmp1, "P", strconv.Itoa((size+1)), "+")
+		l.generator.AddExpression(tmp1, "P", strconv.Itoa((size + 1)), "+")
 
 		//recorrer parametros
 		funcParams := l.Visit(ctx.Parametroscall()).([]interface{})
-		
+
 		for _, param := range funcParams {
 			fmt.Println("PARAMETRO: ", param.(Value).StringValue)
 
-			if param.(Value).Type == STRING || param.(Value).Type == BOOLEAN || param.(Value).Type == CHAR{
+			if param.(Value).Type == STRING || param.(Value).Type == BOOLEAN || param.(Value).Type == CHAR {
 				l.generator.AddSetStack("(int)"+tmp1, param.(Value).Value)
-			}else{
+			} else {
 				l.generator.AddSetStack("(int)"+tmp1, param.(Value).StringValue)
 			}
-				
-			
-			if len(funcParams) - 1 != count {
+
+			if len(funcParams)-1 != count {
 				l.generator.AddExpression(tmp1, tmp1, "1", "+")
 			}
-			count++ 
+			count++
 		}
 
 		l.generator.AddExpression("P", "P", strconv.Itoa(size), "+")
 		l.generator.AddCall(idFunction)
 		l.generator.AddGetStack(tmp1, "(int)P")
 		l.generator.AddExpression("P", "P", strconv.Itoa(size), "-")
-	}else{
+	} else {
 		tmp1 := l.generator.NewTemp()
 		l.generator.AddExpression("P", "P", strconv.Itoa(size), "+")
 		l.generator.AddCall(idFunction)
@@ -108,7 +158,7 @@ func (l *Visitor) VisitParametros(ctx *parser.ParametrosContext) interface{} {
 	paramList := ctx.AllID()
 	typeList := ctx.AllTipo()
 
-	for i := 0; i < len(paramList); i+= 2 {
+	for i := 0; i < len(paramList); i += 2 {
 		id := paramList[i].GetText()
 		typeParam := getTypeParam(typeList[counter].GetText())
 		fmt.Println("Type param: ", typeParam)

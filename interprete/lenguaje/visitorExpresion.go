@@ -605,7 +605,7 @@ func (l *Visitor) VisitNilExpr(ctx *parser.NilExprContext) interface{} {
 }
 
 func (l *Visitor) VisitAccFuncExpr(ctx *parser.AccFuncExprContext) interface{} {
-	return nil
+	return l.Visit(ctx.Accfuncstm())
 }
 
 func (l *Visitor) VisitIntExpr(ctx *parser.IntExprContext) interface{} {

@@ -358,7 +358,7 @@ func swiftgrammarParserInit() {
 		631, 5, 64, 0, 0, 631, 632, 5, 64, 0, 0, 632, 633, 5, 64, 0, 0, 633, 634,
 		3, 108, 54, 0, 634, 635, 5, 56, 0, 0, 635, 636, 3, 4, 2, 0, 636, 637, 5,
 		57, 0, 0, 637, 103, 1, 0, 0, 0, 638, 639, 5, 14, 0, 0, 639, 640, 3, 108,
-		54, 0, 640, 641, 5, 11, 0, 0, 641, 642, 5, 56, 0, 0, 642, 643, 3, 2, 1,
+		54, 0, 640, 641, 5, 11, 0, 0, 641, 642, 5, 56, 0, 0, 642, 643, 3, 4, 2,
 		0, 643, 644, 5, 57, 0, 0, 644, 105, 1, 0, 0, 0, 645, 646, 3, 108, 54, 0,
 		646, 647, 5, 51, 0, 0, 647, 648, 5, 44, 0, 0, 648, 649, 3, 108, 54, 0,
 		649, 656, 1, 0, 0, 0, 650, 651, 3, 108, 54, 0, 651, 652, 5, 52, 0, 0, 652,
@@ -12338,7 +12338,7 @@ type IGuardstmtContext interface {
 	Expr() IExprContext
 	ELSE() antlr.TerminalNode
 	LLAVEIZQ() antlr.TerminalNode
-	Block() IBlockContext
+	BlockFunc() IBlockFuncContext
 	LLAVEDER() antlr.TerminalNode
 
 	// IsGuardstmtContext differentiates from other interfaces.
@@ -12405,10 +12405,10 @@ func (s *GuardstmtContext) LLAVEIZQ() antlr.TerminalNode {
 	return s.GetToken(SwiftGrammarParserLLAVEIZQ, 0)
 }
 
-func (s *GuardstmtContext) Block() IBlockContext {
+func (s *GuardstmtContext) BlockFunc() IBlockFuncContext {
 	var t antlr.RuleContext
 	for _, ctx := range s.GetChildren() {
-		if _, ok := ctx.(IBlockContext); ok {
+		if _, ok := ctx.(IBlockFuncContext); ok {
 			t = ctx.(antlr.RuleContext)
 			break
 		}
@@ -12418,7 +12418,7 @@ func (s *GuardstmtContext) Block() IBlockContext {
 		return nil
 	}
 
-	return t.(IBlockContext)
+	return t.(IBlockFuncContext)
 }
 
 func (s *GuardstmtContext) LLAVEDER() antlr.TerminalNode {
@@ -12489,7 +12489,7 @@ func (p *SwiftGrammarParser) Guardstmt() (localctx IGuardstmtContext) {
 	}
 	{
 		p.SetState(642)
-		p.Block()
+		p.BlockFunc()
 	}
 	{
 		p.SetState(643)

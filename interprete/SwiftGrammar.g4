@@ -249,7 +249,7 @@ forstmt
     ;
 
 guardstmt
-    : GUARD expr ELSE LLAVEIZQ block LLAVEDER
+    : GUARD expr ELSE LLAVEIZQ blockFunc LLAVEDER
     ;
 
 opasignstmt

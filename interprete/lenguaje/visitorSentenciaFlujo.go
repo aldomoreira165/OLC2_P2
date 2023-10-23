@@ -30,13 +30,13 @@ func (l *Visitor) VisitIfstmt(ctx *parser.IfstmtContext) interface{} {
 
 	for _, StamentsCtx := range bloqueInstrucciones.AllStmt() {
 		result = l.Visit(StamentsCtx).(Value)
-		
-		if result.BreakFlag{
+
+		if result.BreakFlag {
 			l.generator.AddGoto(l.generator.BreakLabel)
 			result.BreakFlag = false
 		}
 
-		if result.ContinueFlag{
+		if result.ContinueFlag {
 			l.generator.AddGoto(l.generator.ContinueLabel)
 			result.ContinueFlag = false
 		}
@@ -72,12 +72,12 @@ func (l *Visitor) VisitIfstmt(ctx *parser.IfstmtContext) interface{} {
 		for _, StamentsCtx := range instruccionesElse.AllStmt() {
 			result = l.Visit(StamentsCtx).(Value)
 
-			if result.BreakFlag{
+			if result.BreakFlag {
 				l.generator.AddGoto(l.generator.BreakLabel)
 				result.BreakFlag = false
 			}
 
-			if result.ContinueFlag{
+			if result.ContinueFlag {
 				l.generator.AddGoto(l.generator.ContinueLabel)
 				result.ContinueFlag = false
 			}
@@ -110,12 +110,12 @@ func (l *Visitor) VisitElseifstmt(ctx *parser.ElseifstmtContext) interface{} {
 	for _, StamentsCtx := range bloqueInstrucciones.AllStmt() {
 		result = l.Visit(StamentsCtx).(Value)
 
-		if result.BreakFlag{
+		if result.BreakFlag {
 			l.generator.AddGoto(l.generator.BreakLabel)
 			result.BreakFlag = false
 		}
 
-		if result.ContinueFlag{
+		if result.ContinueFlag {
 			l.generator.AddGoto(l.generator.ContinueLabel)
 			result.ContinueFlag = false
 		}
@@ -139,7 +139,51 @@ func (l *Visitor) VisitElseifstmt(ctx *parser.ElseifstmtContext) interface{} {
 
 // switch
 func (l *Visitor) VisitSwitchstmt(ctx *parser.SwitchstmtContext) interface{} {
-	return nil
+	l.generator.AddComment("Inicio de switch")
+	var result, caseResult Value
+	var OutLvls []interface{}
+	switchExpr := l.Visit(ctx.Expr()).(Value)
+	endSwitchLabel := l.generator.NewLabel()
+	caseStmts := ctx.AllCaseStmt()
+
+	for _, caseStmtCtx := range caseStmts {
+		caseExpr := l.Visit(caseStmtCtx.Expr()).(Value)
+
+		fmt.Println("caseExpr: ", caseExpr.StringValue)
+		fmt.Println("switchExpr: ", switchExpr.StringValue)
+
+		if caseExpr.StringValue == switchExpr.StringValue {
+			fmt.Println("condicion aceptada")
+			caseResult = l.Visit(caseStmtCtx).(Value)
+
+			for _, lvl := range caseResult.OutLabel {
+				l.generator.AddLabel(lvl.(string))
+			}
+
+			// Agregar una etiqueta de salto al final del switch
+			l.generator.AddGoto(endSwitchLabel)
+			break
+		}
+	}
+
+	// Si no se encontró un caso que coincida con la condición, ejecutar el caso default
+	if caseResult.StringValue == "" {
+		defaultCase := ctx.DefaultCase()
+		if defaultCase != nil {
+			caseResult = l.Visit(defaultCase).(Value)
+
+			for _, lvl := range caseResult.OutLabel {
+				l.generator.AddLabel(lvl.(string))
+			}
+		}
+		// Agregar una etiqueta de salto al final del switch
+		l.generator.AddGoto(endSwitchLabel)
+	}
+	// Agregar la etiqueta de salida al final del switch
+	l.generator.AddLabel(endSwitchLabel)
+
+	result.OutLabel = OutLvls
+	return result
 }
 
 func (l *Visitor) VisitCaseStmt(ctx *parser.CaseStmtContext) interface{} {
@@ -154,8 +198,25 @@ func (l *Visitor) VisitCaseStmt(ctx *parser.CaseStmtContext) interface{} {
 	}
 
 	//ejecutando sentencias de condicion principal
-	result = l.Visit(ctx.BlockFunc()).(Value)
-	OutLvls = append(OutLvls, result.OutLabel...)
+	instruccionesCase := ctx.BlockFunc()
+
+	for _, StamentsCtx := range instruccionesCase.AllStmt() {
+		result = l.Visit(StamentsCtx).(Value)
+
+		if result.BreakFlag {
+			l.generator.AddGoto(l.generator.BreakLabel)
+			result.BreakFlag = false
+		}
+
+		if result.ContinueFlag {
+			l.generator.AddGoto(l.generator.ContinueLabel)
+			result.ContinueFlag = false
+		}
+
+		for _, lvl := range result.OutLabel {
+			l.generator.AddLabel(lvl.(string))
+		}
+	}
 
 	//l.generator.AddComment("ultimas etiquetas")
 	l.generator.AddGoto(newLabel)
@@ -176,8 +237,25 @@ func (l *Visitor) VisitDefaultCase(ctx *parser.DefaultCaseContext) interface{} {
 	newLabel := l.generator.NewLabel()
 
 	//ejecutando sentencias de condicion principal
-	result = l.Visit(ctx.BlockFunc()).(Value)
-	OutLvls = append(OutLvls, result.OutLabel...)
+	instruccionesDefault := ctx.BlockFunc()
+
+	for _, StamentsCtx := range instruccionesDefault.AllStmt() {
+		result = l.Visit(StamentsCtx).(Value)
+
+		if result.BreakFlag {
+			l.generator.AddGoto(l.generator.BreakLabel)
+			result.BreakFlag = false
+		}
+
+		if result.ContinueFlag {
+			l.generator.AddGoto(l.generator.ContinueLabel)
+			result.ContinueFlag = false
+		}
+
+		for _, lvl := range result.OutLabel {
+			l.generator.AddLabel(lvl.(string))
+		}
+	}
 
 	//l.generator.AddComment("ultimas etiquetas")
 	l.generator.AddGoto(newLabel)
@@ -214,12 +292,12 @@ func (l *Visitor) VisitWhilestmt(ctx *parser.WhilestmtContext) interface{} {
 	for _, StamentsCtx := range instruccionesWhile.AllStmt() {
 		result = l.Visit(StamentsCtx).(Value)
 
-		if result.BreakFlag{
+		if result.BreakFlag {
 			l.generator.AddGoto(l.generator.BreakLabel)
 			result.BreakFlag = false
 		}
 
-		if result.ContinueFlag{
+		if result.ContinueFlag {
 			l.generator.AddGoto(l.generator.ContinueLabel)
 			result.ContinueFlag = false
 		}
@@ -308,18 +386,17 @@ func (l *Visitor) VisitForRange(ctx *parser.ForRangeContext) interface{} {
 	l.generator.AddLabel(lvl1)                                                //retorno
 	l.generator.AddIf(tmp2, tmp1, "==", lvl3)
 
-
 	instruccionesFor := ctx.BlockFunc()
 
 	for _, StamentsCtx := range instruccionesFor.AllStmt() {
 		result = l.Visit(StamentsCtx).(Value)
 
-		if result.BreakFlag{
+		if result.BreakFlag {
 			l.generator.AddGoto(l.generator.BreakLabel)
 			result.BreakFlag = false
 		}
 
-		if result.ContinueFlag{
+		if result.ContinueFlag {
 			l.generator.AddGoto(l.generator.ContinueLabel)
 			result.ContinueFlag = false
 		}
@@ -344,7 +421,57 @@ func (l *Visitor) VisitForRange(ctx *parser.ForRangeContext) interface{} {
 
 // guard
 func (l *Visitor) VisitGuardstmt(ctx *parser.GuardstmtContext) interface{} {
-	return nil
+	l.generator.AddComment("Inicio de guard")
+	var condicion, result Value
+	var OutLvls []interface{}
+	var newEnv Environment
+
+	// Entorno nuevo
+	newEnv = NewEnvironment(l.entorno, "guard")
+	newEnv.Size["size"] = l.entorno.Size["size"] + 1
+	l.entorno = newEnv
+
+	condicion = l.Visit(ctx.Expr()).(Value)
+	newLabel := l.generator.NewLabel()
+
+	for _, lvl := range condicion.TrueLabel {
+		l.generator.AddLabel(lvl.(string))
+	}
+
+	// Verificar si la condición es falsa y ejecutar las sentencias del guard
+	for _, lvl := range condicion.FalseLabel {
+		l.generator.AddLabel(lvl.(string))
+	}
+
+	// Ejecutando sentencias de condición principal
+	bloqueInstrucciones := ctx.BlockFunc()
+
+	for _, StamentsCtx := range bloqueInstrucciones.AllStmt() {
+		result = l.Visit(StamentsCtx).(Value)
+
+		if result.BreakFlag {
+			l.generator.AddGoto(l.generator.BreakLabel)
+			result.BreakFlag = false
+		}
+
+		if result.ContinueFlag {
+			l.generator.AddGoto(l.generator.ContinueLabel)
+			result.ContinueFlag = false
+		}
+
+		for _, lvl := range result.OutLabel {
+			l.generator.AddLabel(lvl.(string))
+		}
+	}
+
+	// Luego, ir a la etiqueta que sigue después del guard
+	l.generator.AddGoto(newLabel)
+
+	l.entorno = newEnv.Anterior.(Environment)
+
+	OutLvls = append(OutLvls, newLabel)
+	result.OutLabel = OutLvls
+	return result
 }
 
 func (l *Visitor) VisitTipo(ctx *parser.TipoContext) interface{} {
