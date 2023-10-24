@@ -265,7 +265,7 @@ func (l *Visitor) VisitDefaultCase(ctx *parser.DefaultCaseContext) interface{} {
 	return result
 }
 
-// visit del while (arreglar) break no jala todavia
+// while
 func (l *Visitor) VisitWhilestmt(ctx *parser.WhilestmtContext) interface{} {
 	l.generator.AddComment("Inicio de while")
 	var condicion, result Value
@@ -434,16 +434,10 @@ func (l *Visitor) VisitGuardstmt(ctx *parser.GuardstmtContext) interface{} {
 	condicion = l.Visit(ctx.Expr()).(Value)
 	newLabel := l.generator.NewLabel()
 
-	for _, lvl := range condicion.TrueLabel {
-		l.generator.AddLabel(lvl.(string))
-	}
-
-	// Verificar si la condición es falsa y ejecutar las sentencias del guard
 	for _, lvl := range condicion.FalseLabel {
 		l.generator.AddLabel(lvl.(string))
 	}
 
-	// Ejecutando sentencias de condición principal
 	bloqueInstrucciones := ctx.BlockFunc()
 
 	for _, StamentsCtx := range bloqueInstrucciones.AllStmt() {
@@ -464,13 +458,16 @@ func (l *Visitor) VisitGuardstmt(ctx *parser.GuardstmtContext) interface{} {
 		}
 	}
 
-	// Luego, ir a la etiqueta que sigue después del guard
+	for _, lvl := range condicion.TrueLabel {
+		l.generator.AddLabel(lvl.(string))
+	}
+
 	l.generator.AddGoto(newLabel)
+	OutLvls = append(OutLvls, newLabel)
+    result.OutLabel = OutLvls
+
 
 	l.entorno = newEnv.Anterior.(Environment)
-
-	OutLvls = append(OutLvls, newLabel)
-	result.OutLabel = OutLvls
 	return result
 }
 
