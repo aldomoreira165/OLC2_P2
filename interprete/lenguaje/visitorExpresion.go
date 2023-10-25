@@ -175,6 +175,7 @@ func (l *Visitor) VisitOpExpr(ctx *parser.OpExprContext) interface{} {
 				num1, _ := strconv.Atoi(op_izq.Value)
 				num2, _ := strconv.Atoi(op_der.Value)
 				strVal := strconv.Itoa(num1 / num2)
+				fmt.Println(num1, "/", num2, "=", strVal)
 
 				lvl1 := l.generator.NewLabel()
 				lvl2 := l.generator.NewLabel()

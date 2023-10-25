@@ -42,7 +42,7 @@ func (l *Visitor) VisitIfstmt(ctx *parser.IfstmtContext) interface{} {
 		}
 
 		for _, lvl := range result.OutLabel {
-			l.generator.AddLabel(lvl.(string))
+			OutLvls = append(OutLvls, lvl.(string))
 		}
 	}
 
@@ -51,22 +51,36 @@ func (l *Visitor) VisitIfstmt(ctx *parser.IfstmtContext) interface{} {
 	for _, lvl := range condicion.FalseLabel {
 		l.generator.AddLabel(lvl.(string))
 	}
-	//*****************************************add false labels
 
 	l.entorno = newEnv.Anterior.(Environment)
+	//*****************************************add false labels
 
 	//else if
 	if ctx.AllElseifstmt() != nil {
+		//nuevo entorno
+		//ento nuevo
+		newEnv = NewEnvironment(l.entorno, "elseif")
+		newEnv.Size["size"] = l.entorno.Size["size"] + 1
+		l.entorno = newEnv
+
 		for _, elseif := range ctx.AllElseifstmt() {
 			result = l.Visit(elseif).(Value)
+			
 			for _, lvl := range result.OutLabel {
-				l.generator.AddLabel(lvl.(string))
+				OutLvls = append(OutLvls, lvl.(string))
 			}
 		}
+		l.entorno = newEnv.Anterior.(Environment)
 	}
 
 	//else
 	if ctx.ELSE() != nil {
+
+		//nuevo entorno
+		newEnv = NewEnvironment(l.entorno, "else")
+		newEnv.Size["size"] = l.entorno.Size["size"] + 1
+		l.entorno = newEnv
+
 		instruccionesElse := ctx.BlockFunc(1)
 
 		for _, StamentsCtx := range instruccionesElse.AllStmt() {
@@ -83,9 +97,11 @@ func (l *Visitor) VisitIfstmt(ctx *parser.IfstmtContext) interface{} {
 			}
 
 			for _, lvl := range result.OutLabel {
-				l.generator.AddLabel(lvl.(string))
+				OutLvls = append(OutLvls, lvl.(string))
 			}
 		}
+
+		l.entorno = newEnv.Anterior.(Environment)
 	}
 
 	OutLvls = append(OutLvls, newLabel)
@@ -119,6 +135,7 @@ func (l *Visitor) VisitElseifstmt(ctx *parser.ElseifstmtContext) interface{} {
 			l.generator.AddGoto(l.generator.ContinueLabel)
 			result.ContinueFlag = false
 		}
+		
 
 		for _, lvl := range result.OutLabel {
 			l.generator.AddLabel(lvl.(string))
@@ -131,7 +148,6 @@ func (l *Visitor) VisitElseifstmt(ctx *parser.ElseifstmtContext) interface{} {
 		l.generator.AddLabel(lvl.(string))
 	}
 	//*****************************************add false labels
-
 	OutLvls = append(OutLvls, newLabel)
 	result.OutLabel = OutLvls
 	return result
@@ -149,11 +165,8 @@ func (l *Visitor) VisitSwitchstmt(ctx *parser.SwitchstmtContext) interface{} {
 	for _, caseStmtCtx := range caseStmts {
 		caseExpr := l.Visit(caseStmtCtx.Expr()).(Value)
 
-		fmt.Println("caseExpr: ", caseExpr.StringValue)
-		fmt.Println("switchExpr: ", switchExpr.StringValue)
 
 		if caseExpr.StringValue == switchExpr.StringValue {
-			fmt.Println("condicion aceptada")
 			caseResult = l.Visit(caseStmtCtx).(Value)
 
 			for _, lvl := range caseResult.OutLabel {
@@ -279,13 +292,16 @@ func (l *Visitor) VisitWhilestmt(ctx *parser.WhilestmtContext) interface{} {
 	RetLvl := l.generator.NewLabel()
 	l.generator.AddLabel(RetLvl)
 	condicion = l.Visit(ctx.Expr()).(Value)
+
 	//******************** add break & continue lvls
 	l.generator.AddContinue(RetLvl)
 	l.generator.AddBreak(condicion.FalseLabel[0].(string))
+
 	//add true labels
 	for _, lvl := range condicion.TrueLabel {
 		l.generator.AddLabel(lvl.(string))
 	}
+
 	//instrucciones de while
 	instruccionesWhile := ctx.BlockFunc()
 
@@ -464,8 +480,7 @@ func (l *Visitor) VisitGuardstmt(ctx *parser.GuardstmtContext) interface{} {
 
 	l.generator.AddGoto(newLabel)
 	OutLvls = append(OutLvls, newLabel)
-    result.OutLabel = OutLvls
-
+	result.OutLabel = OutLvls
 
 	l.entorno = newEnv.Anterior.(Environment)
 	return result
