@@ -65,7 +65,7 @@ func (l *Visitor) VisitIfstmt(ctx *parser.IfstmtContext) interface{} {
 
 		for _, elseif := range ctx.AllElseifstmt() {
 			result = l.Visit(elseif).(Value)
-			
+
 			for _, lvl := range result.OutLabel {
 				OutLvls = append(OutLvls, lvl.(string))
 			}
@@ -135,7 +135,6 @@ func (l *Visitor) VisitElseifstmt(ctx *parser.ElseifstmtContext) interface{} {
 			l.generator.AddGoto(l.generator.ContinueLabel)
 			result.ContinueFlag = false
 		}
-		
 
 		for _, lvl := range result.OutLabel {
 			l.generator.AddLabel(lvl.(string))
@@ -163,31 +162,47 @@ func (l *Visitor) VisitSwitchstmt(ctx *parser.SwitchstmtContext) interface{} {
 	caseStmts := ctx.AllCaseStmt()
 
 	for _, caseStmtCtx := range caseStmts {
-		caseExpr := l.Visit(caseStmtCtx.Expr()).(Value)
 
+		//entorno
+		newEnv := NewEnvironment(l.entorno, "switch")
+		newEnv.Size["size"] = l.entorno.Size["size"] + 1
+		l.entorno = newEnv
+
+		caseExpr := l.Visit(caseStmtCtx.Expr()).(Value)
 
 		if caseExpr.StringValue == switchExpr.StringValue {
 			caseResult = l.Visit(caseStmtCtx).(Value)
 
 			for _, lvl := range caseResult.OutLabel {
-				l.generator.AddLabel(lvl.(string))
+				OutLvls = append(OutLvls, lvl.(string))
 			}
 
 			// Agregar una etiqueta de salto al final del switch
 			l.generator.AddGoto(endSwitchLabel)
-			break
 		}
+
+		// Salir del entorno
+		l.entorno = newEnv.Anterior.(Environment)
 	}
 
 	// Si no se encontró un caso que coincida con la condición, ejecutar el caso default
 	if caseResult.StringValue == "" {
 		defaultCase := ctx.DefaultCase()
 		if defaultCase != nil {
+
+			//entorno
+			newEnv := NewEnvironment(l.entorno, "switch")
+			newEnv.Size["size"] = l.entorno.Size["size"] + 1
+			l.entorno = newEnv
+
 			caseResult = l.Visit(defaultCase).(Value)
 
 			for _, lvl := range caseResult.OutLabel {
-				l.generator.AddLabel(lvl.(string))
+				OutLvls = append(OutLvls, lvl.(string))
 			}
+
+			// Salir del entorno
+			l.entorno = newEnv.Anterior.(Environment)
 		}
 		// Agregar una etiqueta de salto al final del switch
 		l.generator.AddGoto(endSwitchLabel)

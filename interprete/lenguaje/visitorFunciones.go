@@ -158,7 +158,7 @@ func (l *Visitor) VisitParametros(ctx *parser.ParametrosContext) interface{} {
 	paramList := ctx.AllID()
 	typeList := ctx.AllTipo()
 
-	for i := 0; i < len(paramList); i += 2 {
+	for i := 1; i < len(paramList); i += 2 {
 		id := paramList[i].GetText()
 		typeParam := getTypeParam(typeList[counter].GetText())
 		fmt.Println("Type param: ", typeParam)
