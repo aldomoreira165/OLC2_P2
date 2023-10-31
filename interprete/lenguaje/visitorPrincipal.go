@@ -15,12 +15,15 @@ type Visitor struct {
 	antlr.ParseTreeVisitor
 	generator Generator
 	entorno Environment
+	simbolos *TablaSimbolos
 }
 
 func NewVisitor() parser.SwiftGrammarVisitor {
+	simbolosTabla := NewTablaSimbolos()
 	return &Visitor{
 		generator: NewGenerator(),
 		entorno:   NewEnvironment(nil, "global"),	
+		simbolos: simbolosTabla,
 	}
 }
 
@@ -160,4 +163,8 @@ func (l *Visitor) Visit(tree antlr.ParseTree) interface{} {
 		nodo := tree.Accept(l)
 		return nodo
 	}
+}
+
+func (l *Visitor) GetSymbolTable() *TablaSimbolos {
+	return l.simbolos
 }

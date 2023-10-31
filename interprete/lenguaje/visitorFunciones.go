@@ -44,6 +44,7 @@ func (l *Visitor) VisitFuncionNormal(ctx *parser.FuncionNormalContext) interface
 	l.generator.AddComment("******** Fin Funcion " + idFunction)
 	l.generator.AddEnd()
 	l.generator.SetMainFlag(true)
+	l.simbolos.InsertarSimbolo(idFunction, "Funcion", "void", ctx.GetStart().GetLine(), ctx.GetStart().GetColumn())
 
 	//regresar al entorno anterior
 	l.entorno = newEnv.Anterior.(Environment)
@@ -98,6 +99,7 @@ func (l *Visitor) VisitFuncionRetorno(ctx *parser.FuncionRetornoContext) interfa
 	l.generator.AddComment("******** Fin Funcion " + idFunction)
 	l.generator.AddEnd()
 	l.generator.SetMainFlag(true)
+	l.simbolos.InsertarSimbolo(idFunction, "Funcion", ctx.Tipo().GetText(), ctx.GetStart().GetLine(), ctx.GetStart().GetColumn())
 
 	//regresar al entorno anterior
 	l.entorno = newEnv.Anterior.(Environment)

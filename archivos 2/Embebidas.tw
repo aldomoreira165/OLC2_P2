@@ -3,14 +3,14 @@ print("---FUNCIONES EMBEBIDAS----");
 print("----------14 pts----------");
 print("--------------------------");
 
-/*print("");
-func suma(_ numero1: Int, _ numero2: Int) -> Int {
+print("");
+func suma(n numero1: int, nn numero2: int) -> int {
     let resultado = numero1 + numero2
     return resultado
-}*/
+}
 
-/*let resultado = suma(5, 3)
-print("La suma es: ", resultado)*/
+//var resultado2 = suma(n:5, nn:3);
+/*print("La suma es: ", resultado)*/
 
 print("");
 func saludo3() {

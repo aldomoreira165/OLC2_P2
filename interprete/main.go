@@ -1,9 +1,13 @@
 package main
 
 import (
+	"encoding/base64"
 	"encoding/json"
+	"fmt"
 	"interprete/Parser"
 	"interprete/lenguaje"
+	"interprete/reportes"
+	"io/ioutil"
 	"net/http"
 
 	"github.com/antlr4-go/antlr/v4"
@@ -12,6 +16,8 @@ import (
 
 type Respuesta struct {
 	Salida  string `json:"salida"`
+	Imagen  string `json:"imagen"`
+	ImagenE string `json:"imagenE"`
 }
 
 type CodigoEnviado struct {
@@ -37,9 +43,21 @@ func manejarEnviarcodigo(w http.ResponseWriter, r *http.Request) {
 	visitor := lenguaje.NewVisitor()
 	out := visitor.Visit(tree)
 
+	//generando tabla de simbolos
+	tablaResult := visitor.(*lenguaje.Visitor).GetSymbolTable()
+	reportes.GenerarTabla(tablaResult)
+
+	pngData, err := ioutil.ReadFile("./reportesPNG/tabla.png")
+	if err != nil {
+		fmt.Println("Error al leer el archivo PNG:", err)
+		http.Error(w, "Error interno del servidor", http.StatusInternalServerError)
+		return
+	}
+
 	//preparando respuesta
 	respuesta := Respuesta{
 		Salida:  out.(string),
+		Imagen:  base64.StdEncoding.EncodeToString(pngData),
 	}
 
 	// enviando respuesta al cliente

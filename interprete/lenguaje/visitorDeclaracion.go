@@ -46,9 +46,11 @@ func (l *Visitor) VisitTypedDeclstmt(ctx *parser.TypedDeclstmtContext) interface
 				l.generator.AddGoto(newLabel)
 				l.generator.AddLabel(newLabel)
 				l.generator.AddBr()
+				l.simbolos.InsertarSimbolo(idVar, "Variable", typeVar, ctx.GetStart().GetLine(), ctx.GetStart().GetColumn())
 			} else {
 				l.generator.AddSetStack(strconv.Itoa(newVar.Posicion), result.Value)
 				l.generator.AddBr()
+				l.simbolos.InsertarSimbolo(idVar, "Variable", typeVar, ctx.GetStart().GetLine(), ctx.GetStart().GetColumn())
 			}
 		}
 	} else if typeVar == "float" && result.Type == INTEGER {
@@ -60,6 +62,7 @@ func (l *Visitor) VisitTypedDeclstmt(ctx *parser.TypedDeclstmtContext) interface
 		} else {
 			l.generator.AddSetStack(strconv.Itoa(newVar.Posicion), "(float)"+result.Value)
 			l.generator.AddBr()
+			l.simbolos.InsertarSimbolo(idVar, "Variable", typeVar, ctx.GetStart().GetLine(), ctx.GetStart().GetColumn())
 		}
 	}else {
 		//retornar error de tipos y retornar nil
@@ -90,6 +93,7 @@ func (l *Visitor) VisitOptionalTypedDeclstmt(ctx *parser.OptionalTypedDeclstmtCo
 		} else {
 			l.generator.AddSetStack(strconv.Itoa(newVar.Posicion), "0")
 			l.generator.AddBr()
+			l.simbolos.InsertarSimbolo(idVar, "Variable", ctx.Tipo().GetText(), ctx.GetStart().GetLine(), ctx.GetStart().GetColumn())
 		}
 	}
 	return result
@@ -132,9 +136,11 @@ func (l *Visitor) VisitUntypedDeclstmt(ctx *parser.UntypedDeclstmtContext) inter
 			l.generator.AddGoto(newLabel)
 			l.generator.AddLabel(newLabel)
 			l.generator.AddBr()
+			l.simbolos.InsertarSimbolo(idVar, "Variable", ObtenerTipo(result.Type), ctx.GetStart().GetLine(), ctx.GetStart().GetColumn())
 		} else {
 			l.generator.AddSetStack(strconv.Itoa(newVar.Posicion), result.Value)
 			l.generator.AddBr()
+			l.simbolos.InsertarSimbolo(idVar, "Variable", ObtenerTipo(result.Type), ctx.GetStart().GetLine(), ctx.GetStart().GetColumn())
 		}
 	}
 	return result

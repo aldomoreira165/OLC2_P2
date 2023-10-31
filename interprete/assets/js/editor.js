@@ -94,6 +94,17 @@ btnEjecutar.addEventListener("click", function () {
       } else {
         // Mostrar resultado en la interfaz
         Salida.setValue(data.salida);
+
+        // Agregar un enlace para descargar la imagen
+        const link = document.createElement("a");
+        link.href = "data:image/png;base64," + data.imagen;
+        link.download = "tabla.png";
+        link.innerHTML = "";
+        document.body.appendChild(link);
+
+        btnTablaSimbolos.addEventListener("click", function () {
+          link.click();
+        });
       }
     })
     .catch((error) => {
