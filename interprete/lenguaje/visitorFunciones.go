@@ -88,6 +88,7 @@ func (l *Visitor) VisitFuncionRetorno(ctx *parser.FuncionRetornoContext) interfa
 				resultVal = result
 			} else {
 				fmt.Println("[ERROR] El tipo de retorno no coincide con el tipo de la funcion")
+				l.errores.InsertarError("El tipo de retorno no coincide con el tipo de la funcion", ctx.GetStart().GetLine(), ctx.GetStart().GetColumn())
 			}
 
 			for _, lvl := range result.OutLabel {

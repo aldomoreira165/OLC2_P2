@@ -103,6 +103,7 @@ func (l *Visitor) VisitOpExpr(ctx *parser.OpExprContext) interface{} {
 				return result
 			} else if dominante == NIL {
 				fmt.Println("Error: operacion no valida")
+				l.errores.InsertarError("Error en la operacion", ctx.GetStart().GetLine(), ctx.GetStart().GetColumn())
 				l.generator.AddErrorOperacion()
 				result = NewValue("", false, NIL, "nil", false, false, false)
 				return result
@@ -131,6 +132,7 @@ func (l *Visitor) VisitOpExpr(ctx *parser.OpExprContext) interface{} {
 				return result
 			} else if dominante == NIL {
 				fmt.Println("Error: operacion no valida")
+				l.errores.InsertarError("Error en la operacion", ctx.GetStart().GetLine(), ctx.GetStart().GetColumn())
 				l.generator.AddErrorOperacion()
 				result = NewValue("", false, NIL, "nil", false, false, false)
 				return result
@@ -159,6 +161,7 @@ func (l *Visitor) VisitOpExpr(ctx *parser.OpExprContext) interface{} {
 				return result
 			} else if dominante == NIL {
 				fmt.Println("Error: operacion no valida")
+				l.errores.InsertarError("Error en la operacion", ctx.GetStart().GetLine(), ctx.GetStart().GetColumn())
 				l.generator.AddErrorOperacion()
 				result = NewValue("", false, NIL, "nil", false, false, false)
 				return result
@@ -226,6 +229,7 @@ func (l *Visitor) VisitOpExpr(ctx *parser.OpExprContext) interface{} {
 				return result
 			} else if dominante == NIL {
 				fmt.Println("Error: operacion no valida")
+				l.errores.InsertarError("Error en la operacion", ctx.GetStart().GetLine(), ctx.GetStart().GetColumn())
 				l.generator.AddErrorOperacion()
 				result = NewValue("", false, NIL, "nil", false, false, false)
 				return result
@@ -266,6 +270,7 @@ func (l *Visitor) VisitOpExpr(ctx *parser.OpExprContext) interface{} {
 				return result
 			} else if dominante == NIL {
 				fmt.Println("Error: operacion no valida")
+				l.errores.InsertarError("Error en la operacion", ctx.GetStart().GetLine(), ctx.GetStart().GetColumn())
 				l.generator.AddErrorOperacion()
 				result = NewValue("", false, NIL, "nil", false, false, false)
 				return result
@@ -339,6 +344,7 @@ func (l *Visitor) VisitOpExpr(ctx *parser.OpExprContext) interface{} {
 
 			} else if dominante == NIL {
 				fmt.Println("Error: operacion no valida")
+				l.errores.InsertarError("Error en la operacion", ctx.GetStart().GetLine(), ctx.GetStart().GetColumn())
 				l.generator.AddErrorOperacion()
 				result = NewValue("", false, NIL, "nil", false, false, false)
 				return result
@@ -366,6 +372,7 @@ func (l *Visitor) VisitOpExpr(ctx *parser.OpExprContext) interface{} {
 				return result
 			} else if dominante == NIL {
 				fmt.Println("Error: operacion no valida")
+				l.errores.InsertarError("Error en la operacion", ctx.GetStart().GetLine(), ctx.GetStart().GetColumn())
 				l.generator.AddErrorOperacion()
 				result = NewValue("", false, NIL, "nil", false, false, false)
 				return result
@@ -393,6 +400,7 @@ func (l *Visitor) VisitOpExpr(ctx *parser.OpExprContext) interface{} {
 				return result
 			} else if dominante == NIL {
 				fmt.Println("Error: operacion no valida")
+				l.errores.InsertarError("Error en la operacion", ctx.GetStart().GetLine(), ctx.GetStart().GetColumn())
 				l.generator.AddErrorOperacion()
 				result = NewValue("", false, NIL, "nil", false, false, false)
 				return result
@@ -420,6 +428,7 @@ func (l *Visitor) VisitOpExpr(ctx *parser.OpExprContext) interface{} {
 				return result
 			} else if dominante == NIL {
 				fmt.Println("Error: operacion no valida")
+				l.errores.InsertarError("Error en la operacion", ctx.GetStart().GetLine(), ctx.GetStart().GetColumn())
 				l.generator.AddErrorOperacion()
 				result = NewValue("", false, NIL, "nil", false, false, false)
 				return result
@@ -481,6 +490,7 @@ func (l *Visitor) VisitOpExpr(ctx *parser.OpExprContext) interface{} {
 				return result
 			} else {
 				fmt.Println("ERROR: tipo no compatible !")
+				l.errores.InsertarError("Error en la operacion", ctx.GetStart().GetLine(), ctx.GetStart().GetColumn())
 			}
 		}
 	}
@@ -497,6 +507,7 @@ func (l *Visitor) VisitNumExpr(ctx *parser.NumExprContext) interface{} {
 		num, err := strconv.ParseFloat(numStr, 64)
 		if err != nil {
 			fmt.Println("Error al convertir el numero: ", err)
+			l.errores.InsertarError("Error al convertir el numero", ctx.GetStart().GetLine(), ctx.GetStart().GetColumn())
 		}
 		primitive := NewPrimitive(ctx.GetStart().GetLine(), ctx.GetStart().GetColumn(), num, FLOAT)
 		result := NewValue(fmt.Sprintf("%.4f", primitive.Valor), false, primitive.Tipo, numStr, false, false, false)
@@ -505,6 +516,7 @@ func (l *Visitor) VisitNumExpr(ctx *parser.NumExprContext) interface{} {
 		num, err := strconv.Atoi(numStr)
 		if err != nil {
 			fmt.Println("Error al convertir el numero: ", err)
+			l.errores.InsertarError("Error al convertir el numero", ctx.GetStart().GetLine(), ctx.GetStart().GetColumn())
 		}
 		primitive := NewPrimitive(ctx.GetStart().GetLine(), ctx.GetStart().GetColumn(), num, INTEGER)
 		result := NewValue(fmt.Sprintf("%v", primitive.Valor), false, primitive.Tipo, numStr, false, false, false)

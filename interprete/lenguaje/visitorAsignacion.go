@@ -95,10 +95,12 @@ func (l *Visitor) VisitIncremento(ctx *parser.IncrementoContext) interface{} {
 		} else {
 			//retornar error de tipos y retornar nil
 			fmt.Println("error en los tipos en el incremento")
+			l.errores.InsertarError("Error en los tipos en el incremento", ctx.GetStart().GetLine(), ctx.GetStart().GetColumn())
 			l.generator.AddErrorAsignacion()
 		}
 	}else{
 		fmt.Println("La variable es constante")
+		l.errores.InsertarError("La variable es constante", ctx.GetStart().GetLine(), ctx.GetStart().GetColumn())
 		l.generator.AddErrorAsignacion()
 	}
 	return result
@@ -146,10 +148,12 @@ func (l *Visitor) VisitDecremento(ctx *parser.DecrementoContext) interface{} {
 		} else {
 			//retornar error de tipos y retornar nil
 			fmt.Println("error en los tipos en el decremento")
+			l.errores.InsertarError("Error en los tipos en el decremento", ctx.GetStart().GetLine(), ctx.GetStart().GetColumn())
 			l.generator.AddErrorAsignacion()
 		}
 	}else{
 		fmt.Println("La variable es constante")
+		l.errores.InsertarError("La variable es constante", ctx.GetStart().GetLine(), ctx.GetStart().GetColumn())
 		l.generator.AddErrorAsignacion()
 	}
 	return result

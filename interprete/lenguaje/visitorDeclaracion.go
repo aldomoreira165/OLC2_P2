@@ -67,6 +67,7 @@ func (l *Visitor) VisitTypedDeclstmt(ctx *parser.TypedDeclstmtContext) interface
 	}else {
 		//retornar error de tipos y retornar nil
 		fmt.Println("error en los tipos de la declaracion")
+		l.errores.InsertarError("error en los tipos de la declaracion", ctx.GetStart().GetLine(), ctx.GetStart().GetColumn())
 		l.generator.AddErrorDeclaracion()
 	}
 	fmt.Println("Declaracion de variable con tipo")
@@ -84,12 +85,14 @@ func (l *Visitor) VisitOptionalTypedDeclstmt(ctx *parser.OptionalTypedDeclstmtCo
 
 	if ctx.LET() != nil {
 		fmt.Println("let")
+		l.errores.InsertarError("error en los tipos de la declaracion", ctx.GetStart().GetLine(), ctx.GetStart().GetColumn())	
 		l.generator.AddErrorDeclaracion()
 	} else {
 		newVar = l.entorno.SaveVariable(idVar, tipo, false, ctx.GetStart().GetLine(), ctx.GetStart().GetColumn(), result.StringValue)
 
 		if newVar.Col == 0 && newVar.Lin == 0 && newVar.Tipo == NIL && newVar.Posicion == 0 {
 			l.generator.AddErrorDeclaracion()
+			l.errores.InsertarError("error en los tipos de la declaracion", ctx.GetStart().GetLine(), ctx.GetStart().GetColumn())
 		} else {
 			l.generator.AddSetStack(strconv.Itoa(newVar.Posicion), "0")
 			l.generator.AddBr()
@@ -118,6 +121,7 @@ func (l *Visitor) VisitUntypedDeclstmt(ctx *parser.UntypedDeclstmtContext) inter
 
 	if newVar.Col == 0 && newVar.Lin == 0 && newVar.Tipo == NIL && newVar.Posicion == 0 {
 		l.generator.AddErrorDeclaracion()
+		l.errores.InsertarError("error en los tipos de la declaracion", ctx.GetStart().GetLine(), ctx.GetStart().GetColumn())
 	} else {
 		if result.Type == BOOLEAN {
 			//si no es temp (boolean)

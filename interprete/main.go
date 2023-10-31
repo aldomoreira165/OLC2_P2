@@ -47,7 +47,19 @@ func manejarEnviarcodigo(w http.ResponseWriter, r *http.Request) {
 	tablaResult := visitor.(*lenguaje.Visitor).GetSymbolTable()
 	reportes.GenerarTabla(tablaResult)
 
+	//generando tabla de errores
+	errorResult := visitor.(*lenguaje.Visitor).GetErrorTable()
+	reportes.GenerarTablaErrores(errorResult)
+
+
 	pngData, err := ioutil.ReadFile("./reportesPNG/tabla.png")
+	if err != nil {
+		fmt.Println("Error al leer el archivo PNG:", err)
+		http.Error(w, "Error interno del servidor", http.StatusInternalServerError)
+		return
+	}
+
+	pngDataE, err := ioutil.ReadFile("./reportesPNG/tablaErrores.png")
 	if err != nil {
 		fmt.Println("Error al leer el archivo PNG:", err)
 		http.Error(w, "Error interno del servidor", http.StatusInternalServerError)
@@ -58,6 +70,7 @@ func manejarEnviarcodigo(w http.ResponseWriter, r *http.Request) {
 	respuesta := Respuesta{
 		Salida:  out.(string),
 		Imagen:  base64.StdEncoding.EncodeToString(pngData),
+		ImagenE: base64.StdEncoding.EncodeToString(pngDataE),
 	}
 
 	// enviando respuesta al cliente

@@ -16,14 +16,17 @@ type Visitor struct {
 	generator Generator
 	entorno Environment
 	simbolos *TablaSimbolos
+	errores *TablaErrores
 }
 
 func NewVisitor() parser.SwiftGrammarVisitor {
 	simbolosTabla := NewTablaSimbolos()
+	errorTabla := NewTablaErrores()
 	return &Visitor{
 		generator: NewGenerator(),
 		entorno:   NewEnvironment(nil, "global"),	
 		simbolos: simbolosTabla,
+		errores: errorTabla,
 	}
 }
 
@@ -167,4 +170,8 @@ func (l *Visitor) Visit(tree antlr.ParseTree) interface{} {
 
 func (l *Visitor) GetSymbolTable() *TablaSimbolos {
 	return l.simbolos
+}
+
+func (l *Visitor) GetErrorTable() *TablaErrores {
+	return l.errores
 }

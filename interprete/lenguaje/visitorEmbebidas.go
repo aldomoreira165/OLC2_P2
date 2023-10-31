@@ -80,6 +80,7 @@ func (l *Visitor) VisitPrintstmt(ctx *parser.PrintstmtContext) interface{} {
 			l.generator.AddBr()
 		} else {
 			fmt.Println("Error en print")
+			l.errores.InsertarError("Error en print", ctx.GetStart().GetLine(), ctx.GetStart().GetColumn())
 		}
 		contador++
 	}
@@ -98,6 +99,7 @@ func (l *Visitor) VisitIntstmt(ctx *parser.IntstmtContext) interface{} {
 
 		if error != nil {
 			fmt.Println("[Error] expresion no se puede convertir a int")
+			l.errores.InsertarError("Error en int", ctx.GetStart().GetLine(), ctx.GetStart().GetColumn())
 			result = NewValue("0", false, NIL, "nil", false, false, false)
 			return result
 		}
@@ -114,6 +116,7 @@ func (l *Visitor) VisitIntstmt(ctx *parser.IntstmtContext) interface{} {
 
 			if error != nil {
 				fmt.Println("[Error] expresion no se puede convertir a int")
+				l.errores.InsertarError("Error en int", ctx.GetStart().GetLine(), ctx.GetStart().GetColumn())
 				result = NewValue("0", false, NIL, "nil", false, false, false)
 				return result
 			}
@@ -126,6 +129,7 @@ func (l *Visitor) VisitIntstmt(ctx *parser.IntstmtContext) interface{} {
 
 			if error != nil {
 				fmt.Println("[Error] expresion no se puede convertir a int")
+				l.errores.InsertarError("Error en int", ctx.GetStart().GetLine(), ctx.GetStart().GetColumn())
 				result = NewValue("0", false, NIL, "nil", false, false, false)
 				return result
 			}
@@ -134,6 +138,7 @@ func (l *Visitor) VisitIntstmt(ctx *parser.IntstmtContext) interface{} {
 		}
 	} else {
 		fmt.Println("[Error] expresion no se puede convertir a int")
+		l.errores.InsertarError("Error en int", ctx.GetStart().GetLine(), ctx.GetStart().GetColumn())
 	}
 	return result
 }
@@ -153,6 +158,7 @@ func (l *Visitor) VisitFloatstmt(ctx *parser.FloatstmtContext) interface{} {
 
 		if error != nil {
 			fmt.Println("[Error] expresion no se puede convertir a float")
+			l.errores.InsertarError("Error en float", ctx.GetStart().GetLine(), ctx.GetStart().GetColumn())
 			result = NewValue("0", false, NIL, "nil", false, false, false)
 			return result
 		}
@@ -230,6 +236,7 @@ func (l *Visitor) VisitStringstmt(ctx *parser.StringstmtContext) interface{} {
 		return result
 	} else {
 		fmt.Println("[Error] expresion no se puede convertir a string")
+		l.errores.InsertarError("Error en string", ctx.GetStart().GetLine(), ctx.GetStart().GetColumn())
 	}
 	return result
 }

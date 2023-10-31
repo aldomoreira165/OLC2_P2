@@ -102,8 +102,19 @@ btnEjecutar.addEventListener("click", function () {
         link.innerHTML = "";
         document.body.appendChild(link);
 
+        //Agregar un enlace para descargar la imagen de errores
+        const link2 = document.createElement("a");
+        link2.href = "data:image/png;base64," + data.imagenE;
+        link2.download = "tablaErrores.png";
+        link2.innerHTML = "";
+        document.body.appendChild(link2);
+
         btnTablaSimbolos.addEventListener("click", function () {
           link.click();
+        });
+
+        btnTablaErrores.addEventListener("click", function () {
+          link2.click();
         });
       }
     })
