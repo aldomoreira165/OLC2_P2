@@ -9,6 +9,7 @@ type Environment struct {
 	Tabla    map[string]Symbol
 	Id       string
 	Size     map[string]int
+	outFunctions map[string]string
 }
 
 func NewEnvironment(ant interface{}, id string) Environment {
@@ -18,6 +19,7 @@ func NewEnvironment(ant interface{}, id string) Environment {
 		Tabla:    make(map[string]Symbol),
 		Id:       id,
 		Size:     make(map[string]int),
+		outFunctions: make(map[string]string),
 	}
 	env.Size["size"] = 0
 	return env

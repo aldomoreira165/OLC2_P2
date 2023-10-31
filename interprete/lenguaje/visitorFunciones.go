@@ -101,6 +101,7 @@ func (l *Visitor) VisitFuncionRetorno(ctx *parser.FuncionRetornoContext) interfa
 
 	//regresar al entorno anterior
 	l.entorno = newEnv.Anterior.(Environment)
+	l.entorno.outFunctions[idFunction] = result.Value
 
 	fmt.Println("RESULTADO DE FUNCION: ", resultVal)
 	return resultVal
@@ -147,7 +148,24 @@ func (l *Visitor) VisitAccfuncstm(ctx *parser.AccfuncstmContext) interface{} {
 		l.generator.AddExpression("P", "P", strconv.Itoa(size), "-")
 	}
 	l.generator.AddComment("Final de llamada")
-	return result
+
+	encontrado := false
+
+	if _, ok := l.entorno.outFunctions[idFunction]; ok {
+		encontrado = true
+	} else {
+		encontrado = false
+	}
+
+	fmt.Println("ENCONTRADO: ", encontrado)
+
+	if encontrado {
+		tempReturn := l.entorno.outFunctions[idFunction]
+		result = NewValue(tempReturn, false, INTEGER, tempReturn, false, false, false)
+		return result
+	}else{
+		return result
+	}
 }
 
 // parametros de la funcion
